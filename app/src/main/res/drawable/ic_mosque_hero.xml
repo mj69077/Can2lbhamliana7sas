@@ -1,0 +1,247 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="400dp"
+    android:height="220dp"
+    android:viewportWidth="400"
+    android:viewportHeight="220">
+
+    <!-- Sky Background Gradient -->
+    <path
+        android:pathData="M0,0h400v220h-400z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="200"
+                android:startY="0"
+                android:endX="200"
+                android:endY="220"
+                android:type="linear">
+                <item android:color="#FF03140E" android:offset="0.0"/>
+                <item android:color="#FF07271D" android:offset="0.5"/>
+                <item android:color="#FF0C3E2F" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Starry Sky -->
+    <!-- Star 1 -->
+    <path
+        android:fillColor="#E6F5E6A3"
+        android:pathData="M45,25 L47,30 L52,32 L47,34 L45,39 L43,34 L38,32 L43,30 Z"/>
+    <!-- Star 2 -->
+    <path
+        android:fillColor="#B3E2B84D"
+        android:pathData="M110,40 L111.5,43.5 L115,45 L111.5,46.5 L110,50 L108.5,46.5 L105,45 L108.5,43.5 Z"/>
+    <!-- Star 3 -->
+    <path
+        android:fillColor="#E6FFFFFF"
+        android:pathData="M290,20 L291.5,23.5 L295,25 L291.5,26.5 L290,30 L288.5,26.5 L285,25 L288.5,23.5 Z"/>
+    <!-- Star 4 -->
+    <path
+        android:fillColor="#CCE2B84D"
+        android:pathData="M350,55 L351.5,58.5 L355,60 L351.5,61.5 L350,65 L348.5,61.5 L345,60 L348.5,58.5 Z"/>
+    <!-- Star 5 -->
+    <path
+        android:fillColor="#99F5E6A3"
+        android:pathData="M180,18 L181,20 L183,21 L181,22 L180,24 L179,22 L177,21 L179,20 Z"/>
+    <path
+        android:fillColor="#80FFFFFF"
+        android:pathData="M80,75 a1.5,1.5 0 1,0 3,0 a1.5,1.5 0 1,0 -3,0"/>
+    <path
+        android:fillColor="#80FFFFFF"
+        android:pathData="M240,65 a1.5,1.5 0 1,0 3,0 a1.5,1.5 0 1,0 -3,0"/>
+    <path
+        android:fillColor="#80FFFFFF"
+        android:pathData="M320,85 a1.5,1.5 0 1,0 3,0 a1.5,1.5 0 1,0 -3,0"/>
+
+    <!-- Glowing Crescent Moon -->
+    <path
+        android:pathData="M335,18 C322,18 312,28 312,41 C312,54 322,64 335,64 C338,64 341,63 344,61 C332,58 325,48 325,38 C325,28 332,21 344,19 C341,18 338,18 335,18 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="312"
+                android:startY="18"
+                android:endX="344"
+                android:endY="64"
+                android:type="linear">
+                <item android:color="#FFFFF0B3" android:offset="0.0"/>
+                <item android:color="#FFE2B84D" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Far Silhouette Mosques (Background Layer) -->
+    <path
+        android:fillColor="#1A0D382B"
+        android:pathData="M0,170 L30,165 L50,150 L70,165 L100,168 L140,155 L160,135 L180,155 L220,165 L260,150 L280,130 L300,150 L340,160 L380,152 L400,165 L400,220 L0,220 Z"/>
+
+    <!-- Left Minaret -->
+    <path
+        android:pathData="M65,70 L75,70 L77,100 L73,100 L74,180 L66,180 L67,100 L63,100 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="63"
+                android:startY="70"
+                android:endX="77"
+                android:endY="180"
+                android:type="linear">
+                <item android:color="#FFE2B84D" android:offset="0.0"/>
+                <item android:color="#FF1A4E3D" android:offset="0.7"/>
+                <item android:color="#FF0D2E23" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- Left Minaret Dome Peak & Crescent -->
+    <path
+        android:fillColor="#FFF5E6A3"
+        android:pathData="M70,52 C70,52 64,65 64,70 L76,70 C76,65 70,52 70,52 Z"/>
+    <path
+        android:fillColor="#FFE2B84D"
+        android:pathData="M70,46 L70,52 M68,48 A2,2 0 1,1 70,46"/>
+
+    <!-- Right Minaret -->
+    <path
+        android:pathData="M325,70 L335,70 L337,100 L333,100 L334,180 L326,180 L327,100 L323,100 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="323"
+                android:startY="70"
+                android:endX="337"
+                android:endY="180"
+                android:type="linear">
+                <item android:color="#FFE2B84D" android:offset="0.0"/>
+                <item android:color="#FF1A4E3D" android:offset="0.7"/>
+                <item android:color="#FF0D2E23" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- Right Minaret Dome Peak -->
+    <path
+        android:fillColor="#FFF5E6A3"
+        android:pathData="M330,52 C330,52 324,65 324,70 L336,70 C336,65 330,52 330,52 Z"/>
+    <path
+        android:fillColor="#FFE2B84D"
+        android:pathData="M330,46 L330,52 M328,48 A2,2 0 1,1 330,46"/>
+
+    <!-- Main Grand Central Dome -->
+    <path
+        android:pathData="M130,150 C130,95 200,65 200,65 C200,65 270,95 270,150 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="130"
+                android:startY="65"
+                android:endX="270"
+                android:endY="150"
+                android:type="linear">
+                <item android:color="#FFFFE28A" android:offset="0.0"/>
+                <item android:color="#FFE2B84D" android:offset="0.45"/>
+                <item android:color="#FF9E7B1E" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- Central Dome Crescent Pinnacle -->
+    <path
+        android:fillColor="#FFFDF0CD"
+        android:pathData="M200,45 L200,65 M198,50 A3,3 0 1,1 201,46"/>
+
+    <!-- Left Side Smaller Dome -->
+    <path
+        android:pathData="M80,160 C80,120 125,100 125,100 C125,100 170,120 170,160 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="80"
+                android:startY="100"
+                android:endX="170"
+                android:endY="160"
+                android:type="linear">
+                <item android:color="#FFD6A838" android:offset="0.0"/>
+                <item android:color="#FF1F5E49" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Right Side Smaller Dome -->
+    <path
+        android:pathData="M230,160 C230,120 275,100 275,100 C275,100 320,120 320,160 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="230"
+                android:startY="100"
+                android:endX="320"
+                android:endY="160"
+                android:type="linear">
+                <item android:color="#FFD6A838" android:offset="0.0"/>
+                <item android:color="#FF1F5E49" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Mosque Main Base & Arches Wall -->
+    <path
+        android:pathData="M50,150 L350,150 L350,220 L50,220 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="200"
+                android:startY="150"
+                android:endX="200"
+                android:endY="220"
+                android:type="linear">
+                <item android:color="#FF134535" android:offset="0.0"/>
+                <item android:color="#FF08231A" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Main Central Illuminated Islamic Arch -->
+    <path
+        android:pathData="M170,220 L170,175 C170,160 200,152 200,152 C200,152 230,160 230,175 L230,220 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="200"
+                android:startY="152"
+                android:endX="200"
+                android:endY="220"
+                android:type="linear">
+                <item android:color="#FFFFF4C4" android:offset="0.0"/>
+                <item android:color="#FFE2B84D" android:offset="0.4"/>
+                <item android:color="#FF241804" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Left Arch -->
+    <path
+        android:pathData="M110,220 L110,185 C110,173 130,167 130,167 C130,167 150,173 150,185 L150,220 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="130"
+                android:startY="167"
+                android:endX="130"
+                android:endY="220"
+                android:type="linear">
+                <item android:color="#FFDFB143" android:offset="0.0"/>
+                <item android:color="#FF0A271E" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Right Arch -->
+    <path
+        android:pathData="M250,220 L250,185 C250,173 270,167 270,167 C270,167 290,173 290,185 L290,220 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="270"
+                android:startY="167"
+                android:endX="270"
+                android:endY="220"
+                android:type="linear">
+                <item android:color="#FFDFB143" android:offset="0.0"/>
+                <item android:color="#FF0A271E" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Ornate Golden Base Line -->
+    <path
+        android:fillColor="#FFE2B84D"
+        android:pathData="M0,217 L400,217 L400,220 L0,220 Z"/>
+</vector>

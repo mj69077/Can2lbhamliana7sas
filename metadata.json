@@ -1,0 +1,6 @@
+{
+  "name": "الورد اليومي",
+  "description": "تطبيق متكامل للمهام والعبادات اليومية، ورد قراءة القرآن وختماته، موسوعة السنن النبوية (94 سنة)، حصن المسلم (337 ذكراً)، المصاحف المطبوعة PDF، إشعارات الهاتف والنظام Push Notifications، إذاعة القرآن الكريم، ومواقيت الصلاة.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

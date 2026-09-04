@@ -1,0 +1,266 @@
+package com.example.data.model
+
+data class RadioStation(
+    val id: Int,
+    val name: String,
+    val url: String,
+    val img: String,
+    val category: String = "إذاعات القراء"
+)
+
+object RadioData {
+    val allRadios: List<RadioStation> = listOf(
+        RadioStation(
+            id = 1,
+            name = "إذاعة أبو بكر الشاطري",
+            url = "https://backup.qurango.net/radio/shaik_abu_bakr_al_shatri",
+            img = "https://i1.sndcdn.com/artworks-000663801097-wb0y31-t200x200.jpg",
+            category = "إذاعات القراء"
+        ),
+        RadioStation(
+            id = 2,
+            name = "إذاعة أحمد خضر الطرابلسي",
+            url = "https://backup.qurango.net/radio/ahmad_khader_altarabulsi",
+            img = "https://i.pinimg.com/564x/d3/c2/9c/d3c29cc03198c3c15d380af048b2d68b.jpg",
+            category = "إذاعات القراء"
+        ),
+        RadioStation(
+            id = 3,
+            name = "إذاعة إبراهيم الأخضر",
+            url = "https://backup.qurango.net/radio/ibrahim_alakdar",
+            img = "https://static.suratmp3.com/pics/reciters/thumbs/44_600_600.jpg",
+            category = "إذاعات القراء"
+        ),
+        RadioStation(
+            id = 4,
+            name = "إذاعة خالد الجليل",
+            url = "https://backup.qurango.net/radio/khalid_aljileel",
+            img = "https://i1.sndcdn.com/avatars-ubX3f7yLm5eGyphJ-A4ysyA-t500x500.jpg",
+            category = "إذاعات القراء"
+        ),
+        RadioStation(
+            id = 5,
+            name = "إذاعة صلاح الهاشم",
+            url = "https://backup.qurango.net/radio/salah_alhashim",
+            img = "https://i.pinimg.com/564x/e9/22/1b/e9221b5ffd484937dc70c3eabe350c6f.jpg",
+            category = "إذاعات القراء"
+        ),
+        RadioStation(
+            id = 6,
+            name = "إذاعة صلاح بو خاطر",
+            url = "https://backup.qurango.net/radio/slaah_bukhatir",
+            img = "https://pbs.twimg.com/profile_images/1306502829251624960/uHKIJQpq_200x200.jpg",
+            category = "إذاعات القراء"
+        ),
+        RadioStation(
+            id = 7,
+            name = "إذاعة عبدالباسط عبدالصمد",
+            url = "https://backup.qurango.net/radio/abdulbasit_abdulsamad_mojawwad",
+            img = "https://cdns-images.dzcdn.net/images/talk/06b711ac6da4cde0eb698e244f5e27b8/300x300.jpg",
+            category = "إذاعات القراء"
+        ),
+        RadioStation(
+            id = 8,
+            name = "إذاعة عبد العزيز سحيم",
+            url = "https://backup.qurango.net/radio/a_sheim",
+            img = "https://i.pinimg.com/564x/a7/37/47/a73747375897de4897da372a0fd921a0.jpg",
+            category = "إذاعات القراء"
+        ),
+        RadioStation(
+            id = 9,
+            name = "إذاعة فارس عباد",
+            url = "https://backup.qurango.net/radio/fares_abbad",
+            img = "https://static.suratmp3.com/pics/reciters/thumbs/15_600_600.jpg",
+            category = "إذاعات القراء"
+        ),
+        RadioStation(
+            id = 10,
+            name = "إذاعة ماهر المعيقلي",
+            url = "https://backup.qurango.net/radio/maher",
+            img = "https://is1-ssl.mzstatic.com/image/thumb/Podcasts113/v4/4b/80/58/4b80582d-78ca-a466-0341-0869bc611745/mza_5280524847349008894.jpg/250x250bb.jpg",
+            category = "إذاعات القراء"
+        ),
+        RadioStation(
+            id = 11,
+            name = "إذاعة محمد صديق المنشاوي",
+            url = "https://backup.qurango.net/radio/mohammed_siddiq_alminshawi_mojawwad",
+            img = "https://i1.sndcdn.com/artworks-000284633237-7gdg9t-t200x200.jpg",
+            category = "إذاعات القراء"
+        ),
+        RadioStation(
+            id = 12,
+            name = "إذاعة محمود خليل الحصري",
+            url = "https://backup.qurango.net/radio/mahmoud_khalil_alhussary_mojawwad",
+            img = "https://watanimg.elwatannews.com/image_archive/original_lower_quality/18194265071637693809.jpg",
+            category = "إذاعات القراء"
+        ),
+        RadioStation(
+            id = 13,
+            name = "إذاعة محمود علي البنا",
+            url = "https://backup.qurango.net/radio/mahmoud_ali__albanna_mojawwad",
+            img = "https://i.pinimg.com/200x/29/67/b3/2967b3fbc1ce1f5a70874288d34317bf.jpg",
+            category = "إذاعات القراء"
+        ),
+        RadioStation(
+            id = 14,
+            name = "إذاعة مشاري العفاسي",
+            url = "https://backup.qurango.net/radio/mishary_alafasi",
+            img = "https://i1.sndcdn.com/artworks-000019055020-yr9cjc-t200x200.jpg",
+            category = "إذاعات القراء"
+        ),
+        RadioStation(
+            id = 15,
+            name = "إذاعة ناصر القطامي",
+            url = "https://backup.qurango.net/radio/nasser_alqatami",
+            img = "https://i1.sndcdn.com/artworks-000096282703-s9wldh-t200x200.jpg",
+            category = "إذاعات القراء"
+        ),
+        RadioStation(
+            id = 16,
+            name = "إذاعة نبيل الرفاعي",
+            url = "https://backup.qurango.net/radio/nabil_al_rifay",
+            img = "https://i1.sndcdn.com/artworks-000161140408-wh6nhw-t200x200.jpg",
+            category = "إذاعات القراء"
+        ),
+        RadioStation(
+            id = 17,
+            name = "إذاعة هيثم الجدعاني",
+            url = "https://backup.qurango.net/radio/hitham_aljadani",
+            img = "https://ar.islamway.net/uploads/authors/3948.jpg",
+            category = "إذاعات القراء"
+        ),
+        RadioStation(
+            id = 18,
+            name = "إذاعة ياسر الدوسري",
+            url = "https://backup.qurango.net/radio/yasser_aldosari",
+            img = "https://www.almowaten.net/wp-content/uploads/2022/06/%D9%8A%D8%A7%D8%B3%D8%B1-%D8%A7%D9%84%D8%AF%D9%88%D8%B3%D8%B1%D9%8A.jpg",
+            category = "إذاعات القراء"
+        ),
+        RadioStation(
+            id = 19,
+            name = "إذاعة القرآن الكريم من القاهرة",
+            url = "https://n0e.radiojar.com/8s5u5tpdtwzuv?rj-ttl=5&rj-tok=AAABjW7yROAA0TUU8cXhXIAi6g",
+            img = "https://apkdownmod.com/thumbnail?src=images/appsicon/2020/08/app-image-5f42ba68a61b1.jpg",
+            category = "إذاعات عامة ومباشرة"
+        ),
+        RadioStation(
+            id = 20,
+            name = "إذاعة السنة النبوية",
+            url = "https://n01.radiojar.com/x0vs2vzy6k0uv?rj-ttl=5&rj-tok=AAABjW751GcA4NgCI8-5DCpCHQ",
+            img = "https://i.pinimg.com/564x/55/16/ab/5516abd3744c3d0b0a7b28bedd5474c0.jpg",
+            category = "إذاعات عامة ومباشرة"
+        ),
+        RadioStation(
+            id = 21,
+            name = "إذاعة تلاوات خاشعة",
+            url = "https://backup.qurango.net/radio/salma",
+            img = "https://pbs.twimg.com/profile_images/1396812808659079169/5ft2haLD_400x400.jpg",
+            category = "تلاوات وبرامج"
+        ),
+        RadioStation(
+            id = 22,
+            name = "إذاعة الرقية الشرعية",
+            url = "https://backup.qurango.net/radio/roqiah",
+            img = "https://i1.sndcdn.com/artworks-zygACgAd2NKwuohE-UF2Piw-t500x500.jpg",
+            category = "تلاوات وبرامج"
+        ),
+        RadioStation(
+            id = 23,
+            name = "إذاعة تكبيرات العيد",
+            url = "https://backup.qurango.net/radio/eid",
+            img = "https://i.pinimg.com/736x/3c/b3/fc/3cb3fc494b9f8332a7b7b3256e3d9822.jpg",
+            category = "تلاوات وبرامج"
+        ),
+        RadioStation(
+            id = 24,
+            name = "المختصر في تفسير القرآن الكريم",
+            url = "https://backup.qurango.net/radio/mukhtasartafsir",
+            img = "https://areejquran.net/wp-content/uploads/2015/12/unnamed.jpg",
+            category = "تلاوات وبرامج"
+        ),
+        RadioStation(
+            id = 25,
+            name = "إذاعة مشاري العفاسي",
+            url = "https://backup.qurango.net/radio/mishary_alafasi",
+            img = "https://i1.sndcdn.com/artworks-000663801097-wb0y31-t200x200.jpg",
+            category = "إذاعات القراء"
+        ),
+        RadioStation(
+            id = 26,
+            name = "إذاعة محمد صديق المنشاوي",
+            url = "https://backup.qurango.net/radio/mohammed_siddiq_alminshawi",
+            img = "https://cdns-images.dzcdn.net/images/talk/06b711ac6da4cde0eb698e244f5e27b8/300x300.jpg",
+            category = "إذاعات القراء"
+        ),
+        RadioStation(
+            id = 27,
+            name = "إذاعة محمود خليل الحصري",
+            url = "https://backup.qurango.net/radio/mahmoud_khalil_alhussary",
+            img = "https://static.suratmp3.com/pics/reciters/thumbs/44_600_600.jpg",
+            category = "إذاعات القراء"
+        ),
+        RadioStation(
+            id = 28,
+            name = "إذاعة ماهر المعيقلي",
+            url = "https://backup.qurango.net/radio/maher_al_muaiqly",
+            img = "https://i1.sndcdn.com/avatars-ubX3f7yLm5eGyphJ-A4ysyA-t500x500.jpg",
+            category = "إذاعات القراء"
+        ),
+        RadioStation(
+            id = 29,
+            name = "إذاعة سعد الغامدي",
+            url = "https://backup.qurango.net/radio/saad_alghamdi",
+            img = "https://pbs.twimg.com/profile_images/1306502829251624960/uHKIJQpq_200x200.jpg",
+            category = "إذاعات القراء"
+        ),
+        RadioStation(
+            id = 30,
+            name = "إذاعة أحمد بن علي العجمي",
+            url = "https://backup.qurango.net/radio/ahmed_alajmi",
+            img = "https://i.pinimg.com/564x/d3/c2/9c/d3c29cc03198c3c15d380af048b2d68b.jpg",
+            category = "إذاعات القراء"
+        ),
+        RadioStation(
+            id = 31,
+            name = "إذاعة عبد الرحمن السديس",
+            url = "https://backup.qurango.net/radio/abdulrahman_alsudaes",
+            img = "https://i.pinimg.com/564x/e9/22/1b/e9221b5ffd484937dc70c3eabe350c6f.jpg",
+            category = "إذاعات القراء"
+        ),
+        RadioStation(
+            id = 32,
+            name = "إذاعة سعود الشريم",
+            url = "https://backup.qurango.net/radio/saood_alshuraim",
+            img = "https://www.almowaten.net/wp-content/uploads/2022/06/%D9%8A%D8%A7%D8%B3%D8%B1-%D8%A7%D9%84%D8%AF%D9%88%D8%B3%D8%B1%D9%8A.jpg",
+            category = "إذاعات القراء"
+        ),
+        RadioStation(
+            id = 33,
+            name = "إذاعة ناصر القطامي",
+            url = "https://backup.qurango.net/radio/nasser_alqatami",
+            img = "https://ar.islamway.net/uploads/authors/3948.jpg",
+            category = "إذاعات القراء"
+        ),
+        RadioStation(
+            id = 34,
+            name = "إذاعة سورة البقرة مدار اليوم",
+            url = "https://backup.qurango.net/radio/albaqarah",
+            img = "https://pbs.twimg.com/profile_images/1396812808659079169/5ft2haLD_400x400.jpg",
+            category = "تلاوات وبرامج"
+        ),
+        RadioStation(
+            id = 35,
+            name = "إذاعة أذكار الصباح والمساء",
+            url = "https://backup.qurango.net/radio/athkar_sabah_masa",
+            img = "https://i1.sndcdn.com/artworks-zygACgAd2NKwuohE-UF2Piw-t500x500.jpg",
+            category = "تلاوات وبرامج"
+        ),
+        RadioStation(
+            id = 36,
+            name = "إذاعة الفتاوى الشرعية والدروس",
+            url = "https://backup.qurango.net/radio/fatwa",
+            img = "https://areejquran.net/wp-content/uploads/2015/12/unnamed.jpg",
+            category = "تلاوات وبرامج"
+        )
+    )
+}

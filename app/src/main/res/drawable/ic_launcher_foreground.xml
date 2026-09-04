@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Center Crescent Moon -->
+    <path
+        android:pathData="M54,26 C43,26 34,35 34,46 C34,57 43,66 54,66 C51,62 49,57 49,51 C49,41 53,33 54,26 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:angle="90"
+                android:endColor="#FFE484"
+                android:startColor="#C99423"
+                android:type="linear" />
+        </aapt:attr>
+    </path>
+    <!-- Star on top right -->
+    <path
+        android:pathData="M60,34 L62,39 L67,40 L63,44 L64,49 L59,46 L55,49 L56,44 L52,40 L57,39 Z"
+        android:fillColor="#FFE898" />
+    <!-- Open Quran Book Pages & Stand (Rehal) -->
+    <!-- Left Page -->
+    <path
+        android:pathData="M54,54 C48,51 40,51 32,53 C31.4,53.2 31,53.7 31,54.3 L31,70 C39,68 47,68 54,71 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:angle="0"
+                android:endColor="#FFF3D0"
+                android:startColor="#E6CA85"
+                android:type="linear" />
+        </aapt:attr>
+    </path>
+    <!-- Right Page -->
+    <path
+        android:pathData="M54,54 C60,51 68,51 76,53 C76.6,53.2 77,53.7 77,54.3 L77,70 C69,68 61,68 54,71 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:angle="180"
+                android:endColor="#FFF3D0"
+                android:startColor="#E6CA85"
+                android:type="linear" />
+        </aapt:attr>
+    </path>
+    <!-- Book Spine & Rehal Legs -->
+    <path
+        android:pathData="M53.2,54 L54.8,54 L54.8,72 L53.2,72 Z"
+        android:fillColor="#966C12" />
+    <path
+        android:pathData="M37,70 L54,79 L71,70 L74,73 L54,84 L34,73 Z"
+        android:fillColor="#DFAD39" />
+    <path
+        android:pathData="M44,79 L36,87 L39,89 L48,81 Z"
+        android:fillColor="#B78216" />
+    <path
+        android:pathData="M64,79 L72,87 L69,89 L60,81 Z"
+        android:fillColor="#B78216" />
+    <!-- Quran lines decoration -->
+    <path
+        android:pathData="M36,58 L50,56 M36,62 L50,60 M36,66 L48,64"
+        android:strokeColor="#7A560D"
+        android:strokeWidth="0.8" />
+    <path
+        android:pathData="M58,56 L72,58 M58,60 L72,62 M60,64 L72,66"
+        android:strokeColor="#7A560D"
+        android:strokeWidth="0.8" />
+</vector>

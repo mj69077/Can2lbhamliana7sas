@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">الورد اليومي</string>
+    <string name="widget_title">الورد اليومي والمهام</string>
+    <string name="widget_description">متابعة قراءة القرآن والمهام اليومية والأذكار ومواقيت الصلاة</string>
+    <string name="widget_prayer_title">مواقيت الصلاة والقبلة</string>
+    <string name="widget_prayer_description">مواقيت الصلوات الخمس مع عداد الصلاة القادمة واتجاه القبلة</string>
+</resources>

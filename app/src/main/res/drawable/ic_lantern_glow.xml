@@ -1,0 +1,97 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="160dp"
+    android:height="200dp"
+    android:viewportWidth="160"
+    android:viewportHeight="200">
+
+    <!-- Top Hanging Ring & Chain -->
+    <path
+        android:pathData="M80,10 a8,8 0 1,0 0.01,0"
+        android:strokeWidth="3"
+        android:strokeColor="#FFE2B84D"/>
+    <path
+        android:pathData="M80,26 L80,38"
+        android:strokeWidth="2.5"
+        android:strokeColor="#FFE2B84D"/>
+
+    <!-- Lantern Top Cap Dome -->
+    <path
+        android:pathData="M55,60 C55,42 80,38 80,38 C80,38 105,42 105,60 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="55"
+                android:startY="38"
+                android:endX="105"
+                android:endY="60"
+                android:type="linear">
+                <item android:color="#FFF5E6A3" android:offset="0.0"/>
+                <item android:color="#FFE2B84D" android:offset="0.6"/>
+                <item android:color="#FF966F0F" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Top Crescent Finial -->
+    <path
+        android:pathData="M80,26 C84,26 87,23 87,19 C84,21 80,21 77,19 C77,23 80,26 80,26 Z"
+        android:fillColor="#FFE2B84D"/>
+
+    <!-- Glass Chamber Glow -->
+    <path
+        android:pathData="M48,65 L112,65 L124,130 L36,130 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="80"
+                android:startY="65"
+                android:endX="80"
+                android:endY="130"
+                android:type="linear">
+                <item android:color="#FFFFF7D6" android:offset="0.0"/>
+                <item android:color="#FFFDD835" android:offset="0.4"/>
+                <item android:color="#FFF57C00" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Candle Flame Inner Core -->
+    <path
+        android:pathData="M80,82 C80,82 72,96 72,104 C72,110 76,114 80,114 C84,114 88,110 88,104 C88,96 80,82 80,82 Z"
+        android:fillColor="#FFFFFFFF"/>
+
+    <!-- Filigree Metallic Ribs & Arabesque Windows -->
+    <path
+        android:pathData="M48,65 L36,130 M112,65 L124,130 M70,65 L65,130 M90,65 L95,130"
+        android:strokeWidth="2.5"
+        android:strokeColor="#FF8B6B1B"/>
+
+    <!-- Horizontal Decorative Ribs -->
+    <path
+        android:pathData="M44,85 L116,85 M40,108 L120,108"
+        android:strokeWidth="1.8"
+        android:strokeColor="#FF8B6B1B"/>
+
+    <!-- Base / Bottom Stand -->
+    <path
+        android:pathData="M36,130 L124,130 L114,152 L46,152 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="36"
+                android:startY="130"
+                android:endX="124"
+                android:endY="152"
+                android:type="linear">
+                <item android:color="#FFE2B84D" android:offset="0.0"/>
+                <item android:color="#FF7A5B0F" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Bottom Tassel / Drop -->
+    <path
+        android:pathData="M76,152 L84,152 L81,175 L79,175 Z"
+        android:fillColor="#FFE2B84D"/>
+    <path
+        android:pathData="M80,175 a4,4 0 1,0 0.1,0"
+        android:fillColor="#FFF5E6A3"/>
+</vector>

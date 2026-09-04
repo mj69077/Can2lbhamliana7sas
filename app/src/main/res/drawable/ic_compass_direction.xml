@@ -1,0 +1,51 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="250dp"
+    android:height="250dp"
+    android:viewportWidth="250"
+    android:viewportHeight="250">
+
+    <!-- Outer Ring -->
+    <path
+        android:pathData="M125,10 A115,115 0 1,0 125,240 A115,115 0 1,0 125,10 Z"
+        android:strokeColor="#E2B84D"
+        android:strokeWidth="2"
+        android:fillColor="#0D2E22" />
+
+    <!-- Inner Decorative Ring -->
+    <path
+        android:pathData="M125,22 A103,103 0 1,0 125,228 A103,103 0 1,0 125,22 Z"
+        android:strokeColor="#44E2B84D"
+        android:strokeWidth="1"
+        android:fillColor="#091F17" />
+
+    <!-- North Cardinal Marker (N / ش) -->
+    <path
+        android:pathData="M125,25 L129,38 L121,38 Z"
+        android:fillColor="#E53935" />
+
+    <!-- South Cardinal Marker -->
+    <path
+        android:pathData="M125,225 L129,212 L121,212 Z"
+        android:fillColor="#81C784" />
+
+    <!-- East Cardinal Marker -->
+    <path
+        android:pathData="M225,125 L212,129 L212,121 Z"
+        android:fillColor="#E2B84D" />
+
+    <!-- West Cardinal Marker -->
+    <path
+        android:pathData="M25,125 L38,129 L38,121 Z"
+        android:fillColor="#E2B84D" />
+
+    <!-- Secondary Degree Ticks -->
+    <path
+        android:pathData="M125,10 L125,18 M125,232 L125,240 M10,125 L18,125 M232,125 L240,125"
+        android:strokeColor="#E2B84D"
+        android:strokeWidth="2" />
+
+    <path
+        android:pathData="M44,44 L50,50 M206,44 L200,50 M44,206 L50,200 M206,206 L200,200"
+        android:strokeColor="#88E2B84D"
+        android:strokeWidth="1.5" />
+</vector>

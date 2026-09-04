@@ -1,0 +1,95 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+
+    <!-- Glowing Halo -->
+    <path
+        android:pathData="M100,100m-85,0a85,85 0 1,0 170,0a85,85 0 1,0 -170,0">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="100"
+                android:centerY="100"
+                android:gradientRadius="85"
+                android:type="radial">
+                <item android:color="#33FFD700" android:offset="0.0"/>
+                <item android:color="#0007221A" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Octagonal Building Base Walls (Blue Persian/Iznik Tile Motif) -->
+    <path
+        android:pathData="M35,130 L165,130 L165,175 L35,175 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="35"
+                android:startY="130"
+                android:endX="165"
+                android:endY="175"
+                android:type="linear">
+                <item android:color="#FF1A5276" android:offset="0.0"/>
+                <item android:color="#FF0E2F44" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Drum Base with Arches -->
+    <path
+        android:pathData="M55,95 L145,95 L145,130 L55,130 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="55"
+                android:startY="95"
+                android:endX="145"
+                android:endY="130"
+                android:type="linear">
+                <item android:color="#FF2471A3" android:offset="0.0"/>
+                <item android:color="#FF154360" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Ornate Drum Arches -->
+    <path android:pathData="M65,105 L73,105 L73,125 L65,125 Z" android:fillColor="#FFFFD700"/>
+    <path android:pathData="M83,105 L91,105 L91,125 L83,125 Z" android:fillColor="#FFFFD700"/>
+    <path android:pathData="M109,105 L117,105 L117,125 L109,125 Z" android:fillColor="#FFFFD700"/>
+    <path android:pathData="M127,105 L135,105 L135,125 L127,125 Z" android:fillColor="#FFFFD700"/>
+
+    <!-- Magnificent Golden Dome of the Rock -->
+    <path
+        android:pathData="M50,95 C50,45 100,32 100,32 C100,32 150,45 150,95 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="70"
+                android:startY="32"
+                android:endX="140"
+                android:endY="95"
+                android:type="linear">
+                <item android:color="#FFFFF3C4" android:offset="0.0"/>
+                <item android:color="#FFFFD700" android:offset="0.3"/>
+                <item android:color="#FFD4AC0D" android:offset="0.7"/>
+                <item android:color="#FF9A7D0A" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Golden Spire & Crescent Pinnacle -->
+    <path
+        android:pathData="M100,12 L100,32"
+        android:strokeWidth="2.5"
+        android:strokeColor="#FFFFF0B3"/>
+    <path
+        android:pathData="M100,12 C103,12 105,10 105,7 C103,8 100,8 98,7 C98,10 100,12 100,12 Z"
+        android:fillColor="#FFFFD700"/>
+
+    <!-- Marble Steps Platform -->
+    <path
+        android:pathData="M20,175 L180,175 L180,185 L20,185 Z"
+        android:fillColor="#FFF4F6F6"/>
+    <path
+        android:pathData="M10,185 L190,185 L190,192 L10,192 Z"
+        android:fillColor="#FFE5E8E8"/>
+</vector>

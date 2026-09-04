@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="user" />
+        </trust-anchors>
+    </base-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">mp3quran.net</domain>
+        <domain includeSubdomains="true">quranicaudio.com</domain>
+        <domain includeSubdomains="true">b-cdn.net</domain>
+        <domain includeSubdomains="true">bunnycdn.com</domain>
+        <domain includeSubdomains="true">everyayah.com</domain>
+        <domain includeSubdomains="true">islamic.network</domain>
+        <domain includeSubdomains="true">quran.com</domain>
+        <domain includeSubdomains="true">alquran.cloud</domain>
+        <domain includeSubdomains="true">aladhan.com</domain>
+        <domain includeSubdomains="true">islamweb.net</domain>
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="user" />
+        </trust-anchors>
+    </domain-config>
+</network-security-config>

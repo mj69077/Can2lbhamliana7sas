@@ -1,0 +1,29 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="60dp"
+    android:height="240dp"
+    android:viewportWidth="60"
+    android:viewportHeight="240">
+    <!-- North Point (Red/Gold) -->
+    <path
+        android:pathData="M30,10 L44,120 L30,110 L16,120 Z"
+        android:fillColor="#E53935" />
+    <path
+        android:pathData="M30,10 L30,110 L16,120 Z"
+        android:fillColor="#C62828" />
+
+    <!-- South Point (Silver/Grey) -->
+    <path
+        android:pathData="M30,230 L44,120 L30,130 L16,120 Z"
+        android:fillColor="#ECEFF1" />
+    <path
+        android:pathData="M30,230 L30,130 L16,120 Z"
+        android:fillColor="#CFD8DC" />
+
+    <!-- Center Pivot Ring -->
+    <path
+        android:pathData="M30,105 A15,15 0 1,0 30,135 A15,15 0 1,0 30,105 Z"
+        android:fillColor="#E2B84D" />
+    <path
+        android:pathData="M30,112 A8,8 0 1,0 30,128 A8,8 0 1,0 30,112 Z"
+        android:fillColor="#0D281E" />
+</vector>

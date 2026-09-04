@@ -1,0 +1,81 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+
+    <!-- Sky Background Halo -->
+    <path
+        android:pathData="M100,100m-85,0a85,85 0 1,0 170,0a85,85 0 1,0 -170,0">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="100"
+                android:centerY="100"
+                android:gradientRadius="85"
+                android:type="radial">
+                <item android:color="#2600E676" android:offset="0.0"/>
+                <item android:color="#0007221A" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Base Drum of Dome -->
+    <path
+        android:pathData="M55,120 L145,120 L145,160 L55,160 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="55"
+                android:startY="120"
+                android:endX="145"
+                android:endY="160"
+                android:type="linear">
+                <item android:color="#FF1E6B52" android:offset="0.0"/>
+                <item android:color="#FF0D3A2B" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Drum Windows -->
+    <path android:pathData="M65,130 L73,130 L73,150 L65,150 Z" android:fillColor="#FFE2B84D"/>
+    <path android:pathData="M83,130 L91,130 L91,150 L83,150 Z" android:fillColor="#FFE2B84D"/>
+    <path android:pathData="M109,130 L117,130 L117,150 L109,150 Z" android:fillColor="#FFE2B84D"/>
+    <path android:pathData="M127,130 L135,130 L135,150 L127,150 Z" android:fillColor="#FFE2B84D"/>
+
+    <!-- Famous Green Dome (Al-Qubbah Al-Khadra') -->
+    <path
+        android:pathData="M50,120 C50,65 100,45 100,45 C100,45 150,65 150,120 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="70"
+                android:startY="45"
+                android:endX="140"
+                android:endY="120"
+                android:type="linear">
+                <item android:color="#FF2ECC71" android:offset="0.0"/>
+                <item android:color="#FF1E8449" android:offset="0.4"/>
+                <item android:color="#FF114B29" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Golden Finial & Crescent Peak -->
+    <path
+        android:pathData="M100,22 L100,45"
+        android:strokeWidth="3"
+        android:strokeColor="#FFFFD700"/>
+    <path
+        android:pathData="M100,18 a4,4 0 1,0 0.01,0"
+        android:fillColor="#FFFFD700"/>
+    <path
+        android:pathData="M100,26 C103,26 105,24 105,21 C103,22 100,22 98,21 C98,24 100,26 100,26 Z"
+        android:fillColor="#FFFFD700"/>
+
+    <!-- Base Walls & Court Marble -->
+    <path
+        android:pathData="M30,160 L170,160 L170,185 L30,185 Z"
+        android:fillColor="#FFEDE7D9"/>
+    <path
+        android:pathData="M20,185 L180,185 L180,192 L20,192 Z"
+        android:fillColor="#FFD5CEBF"/>
+</vector>

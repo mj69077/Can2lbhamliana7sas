@@ -1,0 +1,1893 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الورد اليومي | رفيق المسلم — تجربة إيمانية بإتقان استثنائي وموسوعة فقهية</title>
+    <meta name="description" content="تطبيق الورد اليومي — رفيق المسلم. قرآن كريم، مواقيت الصلاة عبر GPS، أذكار ومسبحة تفاعلية، إذاعات مباشرة، وموسوعة فتاوى موثقة لكبار العلماء (ابن باز، ابن عثيمين، إسلام ويب). خريطة تطويرية تضم 500 إضافة مباركة.">
+    <meta name="theme-color" content="#000000">
+
+    <!-- Open Graph / Meta -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="الورد اليومي | رفيق المسلم">
+    <meta property="og:description" content="تجربة إسلامية متكاملة بهندسة برمجية وتصميم فائق الدقة مع موسوعة فتاوى موثوقة.">
+    
+    <!-- Modern Apple-Style Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,700;1,400&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome 6 Pro-style icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- AOS (Animate On Scroll) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+
+    <style>
+        /* --- Apple Design System Tokens --- */
+        :root {
+            --bg-black: #000000;
+            --bg-deep: #050807;
+            --bg-card: rgba(18, 26, 22, 0.65);
+            --bg-card-hover: rgba(26, 38, 32, 0.85);
+            --bg-card-solid: #0d1512;
+            
+            --gold-apple: #F5D372;
+            --gold-bright: #FFE8A3;
+            --gold-muted: #A38536;
+            --gold-titanium: #D4AF37;
+            --emerald-pro: #2DD4BF;
+            --emerald-glow: rgba(45, 212, 191, 0.2);
+
+            --text-primary: #F5F5F7;
+            --text-secondary: #86868B;
+            --text-tertiary: #515154;
+            --text-highlight: #FFFFFF;
+
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --border-glass-hover: rgba(245, 211, 114, 0.35);
+            --border-titanium: rgba(212, 175, 55, 0.2);
+
+            --pill-radius: 980px;
+            --card-radius: 28px;
+            --font-sans: 'IBM Plex Sans Arabic', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            --font-en: 'Plus Jakarta Sans', sans-serif;
+            --font-quran: 'Amiri', serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--font-sans);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            background-color: var(--bg-black);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.5;
+            letter-spacing: -0.015em;
+        }
+
+        ::selection {
+            background: var(--gold-apple);
+            color: #000000;
+        }
+
+        /* --- Ambient Lighting Layers --- */
+        .ambient-glow {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+            background: 
+                radial-gradient(circle at 50% -10%, rgba(212, 175, 55, 0.12) 0%, transparent 60%),
+                radial-gradient(circle at 10% 40%, rgba(45, 212, 191, 0.04) 0%, transparent 40%),
+                radial-gradient(circle at 90% 70%, rgba(245, 211, 114, 0.05) 0%, transparent 50%);
+        }
+
+        /* --- Apple Frosted Navigation Dock --- */
+        header {
+            position: fixed;
+            top: 16px;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            padding: 0 16px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .nav-dock {
+            width: 100%;
+            max-width: 1040px;
+            height: 56px;
+            background: rgba(12, 18, 15, 0.7);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--pill-radius);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .brand-pill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .brand-logo-gem {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #FFE8A3 0%, #D4AF37 50%, #805E1B 100%);
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #050807;
+            font-size: 15px;
+            box-shadow: 0 0 15px rgba(245, 211, 114, 0.3);
+        }
+
+        .brand-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #FFFFFF;
+        }
+
+        .brand-subtitle {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            margin-right: 6px;
+            padding: 2px 8px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: var(--pill-radius);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            color: #FFFFFF;
+        }
+
+        .nav-badge-pill {
+            background: rgba(245, 211, 114, 0.15);
+            color: var(--gold-apple) !important;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            border: 1px solid rgba(245, 211, 114, 0.3);
+        }
+
+        .cta-pill-btn {
+            background: #FFFFFF;
+            color: #000000 !important;
+            padding: 8px 18px;
+            border-radius: var(--pill-radius);
+            font-size: 0.85rem;
+            font-weight: 600 !important;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.15);
+            text-decoration: none;
+        }
+
+        .cta-pill-btn:hover {
+            transform: scale(1.03);
+            background: var(--gold-bright);
+            box-shadow: 0 6px 20px rgba(245, 211, 114, 0.4);
+        }
+
+        /* --- Hero Section: Apple Cinematic Display --- */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 130px 20px 70px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 18px;
+            background: rgba(245, 211, 114, 0.08);
+            border: 1px solid rgba(245, 211, 114, 0.25);
+            border-radius: var(--pill-radius);
+            color: var(--gold-apple);
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            margin-bottom: 24px;
+        }
+
+        .hero-title {
+            font-size: clamp(2.4rem, 5.8vw, 4.6rem);
+            font-weight: 700;
+            line-height: 1.12;
+            letter-spacing: -0.03em;
+            max-width: 950px;
+            margin: 0 auto 20px;
+            background: linear-gradient(180deg, #FFFFFF 20%, #E5E5EA 60%, #86868B 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-title span.gold-glow {
+            background: linear-gradient(135deg, #FFEAA7 0%, #F5D372 50%, #C49B28 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-description {
+            font-size: clamp(1.05rem, 1.8vw, 1.35rem);
+            color: var(--text-secondary);
+            max-width: 720px;
+            margin: 0 auto 34px;
+            font-weight: 400;
+            line-height: 1.65;
+        }
+
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 45px;
+        }
+
+        .btn-apple-primary {
+            background: linear-gradient(180deg, #FFFFFF 0%, #E0E0E0 100%);
+            color: #000000;
+            padding: 16px 36px;
+            border-radius: var(--pill-radius);
+            font-size: 1.05rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.3);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .btn-apple-primary:hover {
+            transform: translateY(-2px) scale(1.02);
+            background: linear-gradient(180deg, #FFF0BA 0%, #F5D372 100%);
+            box-shadow: 0 15px 40px rgba(245, 211, 114, 0.4);
+            color: #000000;
+        }
+
+        .btn-apple-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            padding: 16px 28px;
+            border-radius: var(--pill-radius);
+            font-size: 1.05rem;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--border-glass);
+            backdrop-filter: blur(12px);
+            transition: all 0.3s ease;
+        }
+
+        .btn-apple-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.25);
+            color: #FFFFFF;
+            transform: translateY(-2px);
+        }
+
+        /* --- Apple Key Metrics Strip --- */
+        .metrics-strip {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(16px, 4vw, 50px);
+            flex-wrap: wrap;
+            padding: 22px 30px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--pill-radius);
+            backdrop-filter: blur(20px);
+            max-width: 960px;
+            margin: 0 auto 60px;
+        }
+
+        .metric-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1.45rem;
+            font-weight: 700;
+            color: #FFFFFF;
+            font-family: var(--font-en), var(--font-sans);
+            background: linear-gradient(135deg, #FFFFFF, var(--gold-apple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .metric-label {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-top: 2px;
+        }
+
+        /* --- Apple Titanium Device Frame Mockup --- */
+        .mockup-stage {
+            position: relative;
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        .device-titanium-shell {
+            width: 340px;
+            height: 690px;
+            background: #000000;
+            border-radius: 54px;
+            padding: 12px;
+            position: relative;
+            box-shadow: 
+                0 0 0 1px rgba(255, 255, 255, 0.12),
+                0 0 0 3px #1F2823,
+                0 0 0 4px rgba(245, 211, 114, 0.25),
+                0 30px 100px -20px rgba(0, 0, 0, 0.9),
+                0 0 80px rgba(245, 211, 114, 0.15);
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .device-titanium-shell:hover {
+            transform: translateY(-8px) scale(1.01);
+        }
+
+        .device-screen {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #071912 0%, #030a07 100%);
+            border-radius: 44px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 18px 16px;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Dynamic Island */
+        .dynamic-island {
+            width: 115px;
+            height: 28px;
+            background: #000000;
+            border-radius: 20px;
+            margin: 0 auto 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10px;
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06);
+            z-index: 10;
+        }
+
+        .island-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--emerald-pro);
+            border-radius: 50%;
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
+        }
+
+        .island-text {
+            font-size: 0.65rem;
+            color: var(--gold-apple);
+            font-weight: 600;
+        }
+
+        /* Inside Device Screen UI */
+        .ui-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .ui-time-badge {
+            font-size: 0.75rem;
+            color: var(--gold-apple);
+            font-weight: 700;
+        }
+
+        .ui-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 14px;
+            margin-bottom: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .ui-prayer-hero {
+            background: linear-gradient(135deg, rgba(245, 211, 114, 0.12) 0%, rgba(45, 212, 191, 0.06) 100%);
+            border: 1px solid rgba(245, 211, 114, 0.25);
+        }
+
+        .prayer-hero-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .prayer-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #FFFFFF;
+        }
+
+        .prayer-time {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--gold-apple);
+            font-family: var(--font-en), var(--font-sans);
+        }
+
+        .prayer-countdown {
+            font-size: 0.7rem;
+            color: var(--emerald-pro);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 4px;
+        }
+
+        .ui-prayer-strip {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 4px;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .strip-pill {
+            background: rgba(0, 0, 0, 0.35);
+            padding: 5px 2px;
+            border-radius: 8px;
+            font-size: 0.6rem;
+            color: var(--text-secondary);
+        }
+
+        .strip-pill.active {
+            background: var(--gold-apple);
+            color: #000000;
+            font-weight: 700;
+        }
+
+        .ui-quran-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .quran-progress-ring {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: conic-gradient(var(--gold-apple) 68%, rgba(255, 255, 255, 0.1) 0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3px;
+        }
+
+        .ring-inner {
+            width: 100%;
+            height: 100%;
+            background: #061510;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--gold-apple);
+        }
+
+        /* Floating Studio Radio Bar Inside Screen */
+        .ui-audio-bar {
+            margin-top: auto;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(245, 211, 114, 0.3);
+            border-radius: 16px;
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .audio-wave {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            height: 14px;
+        }
+
+        .wave-bar {
+            width: 3px;
+            background: var(--gold-apple);
+            border-radius: 2px;
+            animation: wave 1s ease-in-out infinite alternate;
+        }
+
+        .wave-bar:nth-child(1) { height: 6px; animation-delay: 0.1s; }
+        .wave-bar:nth-child(2) { height: 14px; animation-delay: 0.3s; }
+        .wave-bar:nth-child(3) { height: 9px; animation-delay: 0.2s; }
+        .wave-bar:nth-child(4) { height: 12px; animation-delay: 0.4s; }
+
+        @keyframes wave {
+            0% { transform: scaleY(0.4); }
+            100% { transform: scaleY(1); }
+        }
+
+        /* --- Section Container Generic --- */
+        .pro-section {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 90px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-headline {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-tag {
+            color: var(--gold-apple);
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            display: inline-block;
+            background: rgba(245, 211, 114, 0.08);
+            padding: 4px 14px;
+            border-radius: var(--pill-radius);
+            border: 1px solid rgba(245, 211, 114, 0.2);
+        }
+
+        .section-title-large {
+            font-size: clamp(1.9rem, 4.2vw, 3.1rem);
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: -0.025em;
+            color: #FFFFFF;
+        }
+
+        .section-desc-sub {
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+            max-width: 650px;
+            margin: 14px auto 0;
+            line-height: 1.6;
+        }
+
+        /* --- Apple Bento Grid Layout --- */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 20px;
+        }
+
+        .bento-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--card-radius);
+            padding: 34px;
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .bento-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-glass-hover);
+            background: var(--bg-card-hover);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(245, 211, 114, 0.1);
+        }
+
+        .col-8 { grid-column: span 8; }
+        .col-4 { grid-column: span 4; }
+        .col-6 { grid-column: span 6; }
+        .col-12 { grid-column: span 12; }
+
+        .bento-icon-wrapper {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: var(--gold-apple);
+            margin-bottom: 20px;
+        }
+
+        .bento-card-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin-bottom: 10px;
+            letter-spacing: -0.02em;
+        }
+
+        .bento-card-desc {
+            font-size: 0.92rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .bento-footer-tag {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 22px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--gold-apple);
+        }
+
+        .gps-orbit-badge {
+            background: rgba(45, 212, 191, 0.1);
+            border: 1px solid rgba(45, 212, 191, 0.3);
+            color: var(--emerald-pro);
+            padding: 4px 12px;
+            border-radius: var(--pill-radius);
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* --- Fatwa Vault Pro Section --- */
+        .fatwa-filter-tabs {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 35px;
+        }
+
+        .fatwa-tab {
+            padding: 9px 20px;
+            border-radius: var(--pill-radius);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-glass);
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .fatwa-tab.active, .fatwa-tab:hover {
+            background: rgba(245, 211, 114, 0.15);
+            color: var(--gold-apple);
+            border-color: rgba(245, 211, 114, 0.35);
+        }
+
+        .fatwa-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .fatwa-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 22px;
+            padding: 26px;
+            backdrop-filter: blur(20px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .fatwa-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-glass-hover);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+        }
+
+        .fatwa-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .scholar-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge-binbaz {
+            background: rgba(45, 212, 191, 0.12);
+            color: #2DD4BF;
+            border: 1px solid rgba(45, 212, 191, 0.3);
+        }
+
+        .badge-othaymeen {
+            background: rgba(245, 211, 114, 0.12);
+            color: var(--gold-apple);
+            border: 1px solid rgba(245, 211, 114, 0.3);
+        }
+
+        .badge-islamweb {
+            background: rgba(147, 197, 253, 0.12);
+            color: #93C5FD;
+            border: 1px solid rgba(147, 197, 253, 0.3);
+        }
+
+        .fatwa-question {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #FFFFFF;
+            line-height: 1.45;
+            margin-bottom: 12px;
+        }
+
+        .fatwa-answer {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .fatwa-source {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* --- 500 Roadmap Accordion Section --- */
+        .roadmap-container {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            max-width: 1040px;
+            margin: 0 auto;
+        }
+
+        .roadmap-category {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .roadmap-category.open {
+            border-color: rgba(245, 211, 114, 0.3);
+            background: rgba(20, 30, 24, 0.75);
+        }
+
+        .category-header {
+            padding: 20px 26px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .category-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .cat-icon-circle {
+            width: 40px;
+            height: 40px;
+            background: rgba(245, 211, 114, 0.1);
+            border: 1px solid rgba(245, 211, 114, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gold-apple);
+            font-size: 16px;
+        }
+
+        .cat-title-text h4 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #FFFFFF;
+        }
+
+        .cat-title-text span {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .cat-count-pill {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-primary);
+            padding: 4px 12px;
+            border-radius: var(--pill-radius);
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+
+        .category-items-grid {
+            display: none;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 10px;
+            padding: 10px 26px 26px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .roadmap-category.open .category-items-grid {
+            display: grid;
+        }
+
+        .roadmap-item {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.45;
+        }
+
+        .roadmap-item span.item-num {
+            color: var(--gold-apple);
+            font-weight: 700;
+            font-family: var(--font-en);
+            font-size: 0.75rem;
+            min-width: 24px;
+        }
+
+        /* --- Apple-Style Feature Specs Strip --- */
+        .specs-strip-section {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .specs-container {
+            background: linear-gradient(180deg, rgba(20, 30, 25, 0.6) 0%, rgba(10, 15, 12, 0.8) 100%);
+            border: 1px solid var(--border-glass);
+            border-radius: 36px;
+            padding: 45px 30px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            text-align: center;
+        }
+
+        .spec-box h5 {
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: #FFFFFF;
+            font-family: var(--font-en), var(--font-sans);
+            margin-bottom: 6px;
+        }
+
+        .spec-box h5.highlight-gold {
+            background: linear-gradient(135deg, #FFEAA7, #F5D372);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .spec-box p {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* --- Apple Download / CTA Grand Card --- */
+        .cta-grand-section {
+            max-width: 1080px;
+            margin: 50px auto 90px;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-grand-card {
+            background: radial-gradient(circle at 50% 0%, rgba(245, 211, 114, 0.15) 0%, rgba(10, 16, 13, 0.95) 70%);
+            border: 1px solid var(--border-titanium);
+            border-radius: 40px;
+            padding: 70px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+        }
+
+        .cta-grand-title {
+            font-size: clamp(2rem, 4.5vw, 3.4rem);
+            font-weight: 800;
+            color: #FFFFFF;
+            letter-spacing: -0.03em;
+            margin-bottom: 16px;
+        }
+
+        .cta-grand-desc {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 550px;
+            margin: 0 auto 36px;
+        }
+
+        .installation-steps {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 45px;
+            text-align: right;
+        }
+
+        .apple-step-pill {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 16px 22px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 250px;
+        }
+
+        .step-badge {
+            width: 32px;
+            height: 32px;
+            background: var(--gold-apple);
+            color: #000000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .step-text h6 {
+            color: #FFFFFF;
+            font-size: 0.92rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .step-text p {
+            color: var(--text-secondary);
+            font-size: 0.72rem;
+        }
+
+        /* --- Apple Minimalist Footer --- */
+        footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            background: #020403;
+            padding: 60px 20px 40px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-inner {
+            max-width: 1080px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .footer-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #FFFFFF;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .footer-verse {
+            font-family: var(--font-quran);
+            font-size: 1.15rem;
+            color: var(--gold-apple);
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: #FFFFFF;
+        }
+
+        /* --- Responsiveness --- */
+        @media (max-width: 960px) {
+            .col-8, .col-4, .col-6 {
+                grid-column: span 12;
+            }
+            .specs-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .nav-links {
+                display: none;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .specs-container {
+                grid-template-columns: 1fr;
+            }
+            .device-titanium-shell {
+                width: 300px;
+                height: 620px;
+            }
+            .cta-grand-card {
+                padding: 45px 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Ambient Subtle Background Glow -->
+    <div class="ambient-glow"></div>
+
+    <!-- Apple-Style Floating Frosted Glass Dock -->
+    <header>
+        <div class="nav-dock">
+            <a href="#" class="brand-pill">
+                <div class="brand-logo-gem">
+                    <i class="fa-solid fa-mosque"></i>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <span class="brand-title">الورد اليومي</span>
+                    <span class="brand-subtitle">Pro</span>
+                </div>
+            </a>
+
+            <ul class="nav-links">
+                <li><a href="#features">المميزات</a></li>
+                <li><a href="#fatawa">موسوعة الفتاوى</a></li>
+                <li><a href="#roadmap">خريطة الـ 500 إضافة <span class="nav-badge-pill">500+</span></a></li>
+                <li><a href="#specs">المواصفات</a></li>
+                <li><a href="#download">التثبيت</a></li>
+            </ul>
+
+            <a href="#download" class="cta-pill-btn">
+                <i class="fa-solid fa-download"></i>
+                <span>تحميل APK</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Hero Showcase Section -->
+    <section class="hero">
+        <div class="hero-eyebrow" data-aos="fade-down" data-aos-duration="900">
+            <i class="fa-solid fa-sparkles"></i>
+            <span>الإصدار 1.0 الجديد بالكامل • مع موسوعة الفتاوى و500 ميزة إيمانية</span>
+        </div>
+
+        <h1 class="hero-title" data-aos="fade-up" data-aos-duration="1000">
+            إيمان أعمق.<br>
+            <span class="gold-glow">صُمم ليرتقي بعبادتك ويوثق فتاواك.</span>
+        </h1>
+
+        <p class="hero-description" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="100">
+            تطبيق إسلامي متكامل بهندسة برمجية استثنائية. يجمع بين مواقيت الصلاة الفلكية بنظام GPS، المصحف الشريف بتفسيره، المسبحة التفاعلية، وموسوعة فتاوى موثقة لكبار العلماء (ابن باز، ابن عثيمين، وإسلام ويب).
+        </p>
+
+        <div class="hero-actions" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200">
+            <a href="#download" class="btn-apple-primary">
+                <i class="fa-brands fa-android fa-lg"></i>
+                <span>تحميل تطبيق الأندرويد مجاناً</span>
+            </a>
+            <a href="#fatawa" class="btn-apple-secondary">
+                <i class="fa-solid fa-scale-balanced"></i>
+                <span>استكشف موسوعة الفتاوى</span>
+            </a>
+        </div>
+
+        <!-- Metric highlights -->
+        <div class="metrics-strip" data-aos="zoom-in" data-aos-duration="900" data-aos-delay="300">
+            <div class="metric-item">
+                <span class="metric-value">100%</span>
+                <span class="metric-label">أوفلاين بدون إنترنت</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-value">0%</span>
+                <span class="metric-label">إعلانات أو تتبع</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-value">500+</span>
+                <span class="metric-label">ميزة وخاصية مدمجة</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-value">3</span>
+                <span class="metric-label">أكبر مراجع فقهية معتمدة</span>
+            </div>
+        </div>
+
+        <!-- Titanium Phone Mockup -->
+        <div class="mockup-stage" data-aos="fade-up" data-aos-duration="1200" data-aos-delay="350">
+            <div class="device-titanium-shell">
+                <div class="device-screen">
+                    <!-- Dynamic Island -->
+                    <div class="dynamic-island">
+                        <div class="island-dot"></div>
+                        <span class="island-text">أذان العصر بعد 1:42</span>
+                    </div>
+
+                    <!-- Header inside screen -->
+                    <div class="ui-header">
+                        <div>
+                            <div class="ui-time-badge">السبت، 29 صفر 1448 هـ</div>
+                            <div style="font-size: 0.65rem; color: var(--text-secondary);">مكة المكرمة • GPS متصل</div>
+                        </div>
+                        <i class="fa-solid fa-compass" style="color: var(--gold-apple); font-size: 0.9rem;"></i>
+                    </div>
+
+                    <!-- Main Prayer Live Card -->
+                    <div class="ui-card ui-prayer-hero">
+                        <div class="prayer-hero-top">
+                            <div>
+                                <div style="font-size: 0.65rem; color: var(--text-secondary);">الصلاة القادمة</div>
+                                <div class="prayer-name">صلاة العصر</div>
+                            </div>
+                            <div style="text-align: left;">
+                                <div class="prayer-time">03:28 م</div>
+                                <div class="prayer-countdown">
+                                    <i class="fa-solid fa-stopwatch fa-xs"></i>
+                                    <span>متبقي 01:42:15</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 5 Prayers Grid -->
+                        <div class="ui-prayer-strip">
+                            <div class="strip-pill">الفجر<br><b>04:32</b></div>
+                            <div class="strip-pill">الظهر<br><b>12:15</b></div>
+                            <div class="strip-pill active">العصر<br><b>03:28</b></div>
+                            <div class="strip-pill">المغرب<br><b>06:40</b></div>
+                            <div class="strip-pill">العشاء<br><b>08:10</b></div>
+                        </div>
+                    </div>
+
+                    <!-- Quran Active Progress Card -->
+                    <div class="ui-card ui-quran-box">
+                        <div>
+                            <div style="font-size: 0.65rem; color: var(--text-secondary);">الورد اليومي للقرآن</div>
+                            <div style="font-size: 0.85rem; font-weight: 700; color: #FFFFFF;">سورة الكهف • صفحة 293</div>
+                            <div style="font-size: 0.65rem; color: var(--gold-apple); margin-top: 2px;">خطة الختمة: جزء يومياً</div>
+                        </div>
+                        <div class="quran-progress-ring">
+                            <div class="ring-inner">68%</div>
+                        </div>
+                    </div>
+
+                    <!-- Smart Tasbih Preview -->
+                    <div class="ui-card" style="display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <div style="font-size: 0.8rem; font-weight: 700; color: #FFFFFF;">سبحان الله وبحمده</div>
+                            <div style="font-size: 0.65rem; color: var(--text-secondary);">المسبحة الإلكترونية الذكية</div>
+                        </div>
+                        <div style="background: rgba(245, 211, 114, 0.15); border: 1px solid var(--gold-apple); color: var(--gold-apple); font-weight: 800; font-size: 0.85rem; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            33
+                        </div>
+                    </div>
+
+                    <!-- Floating Live Audio Equalizer -->
+                    <div class="ui-audio-bar">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-tower-broadcast" style="color: var(--gold-apple); font-size: 0.8rem;"></i>
+                            <div>
+                                <div style="font-size: 0.65rem; font-weight: 700; color: #FFFFFF;">إذاعة القرآن الكريم — القاهرة</div>
+                                <div style="font-size: 0.55rem; color: var(--emerald-pro);">بث حي متواصل • جودة نقية</div>
+                            </div>
+                        </div>
+                        <div class="audio-wave">
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Apple Bento Grid Showcase Section -->
+    <section class="pro-section" id="features">
+        <div class="section-headline" data-aos="fade-up">
+            <span class="section-tag">هندسة فائقة الإتقان</span>
+            <h2 class="section-title-large">كل ركن في التطبيق صُمم بعناية استثنائية.</h2>
+            <p class="section-desc-sub">ميزات متقدمة، أداء خاطف، وتجربة تركز بنسبة 100% على خشوعك وطمأنينتك.</p>
+        </div>
+
+        <div class="bento-grid">
+            <!-- 1. Big Card (8 Columns): Complete Quran & Tafseer -->
+            <div class="bento-card col-8" data-aos="fade-up" data-aos-delay="100">
+                <div>
+                    <div class="bento-icon-wrapper">
+                        <i class="fa-solid fa-book-quran"></i>
+                    </div>
+                    <h3 class="bento-card-title">المصحف الشريف وخيارات الختمة الذكية</h3>
+                    <p class="bento-card-desc">
+                        نص قرآني كامل بالرسم العثماني المريح للعين مع التفسير الميسر لكل آية بلمسة واحدة. إمكانية ضبط خطط الختمة (شهرية، سنوية، أو حرة)، وعلامات مرجعية سحابية ومحلية تحفظ تقدمك في القراءة فوراً.
+                    </p>
+                </div>
+                <div class="bento-footer-tag">
+                    <span>114 سورة بالرسم العثماني • تفسير الآيات • وضع التحفيظ</span>
+                    <i class="fa-solid fa-arrow-left fa-xs"></i>
+                </div>
+            </div>
+
+            <!-- 2. Card (4 Columns): GPS Precision Prayer Times -->
+            <div class="bento-card col-4" data-aos="fade-up" data-aos-delay="200">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div class="bento-icon-wrapper">
+                            <i class="fa-solid fa-location-crosshairs"></i>
+                        </div>
+                        <span class="gps-orbit-badge">
+                            <i class="fa-solid fa-satellite"></i> GPS Active
+                        </span>
+                    </div>
+                    <h3 class="bento-card-title">مواقيت الصلاة عبر GPS</h3>
+                    <p class="bento-card-desc">
+                        حساب فلكي دقيق بالثانية استناداً لموقعك الجغرافي الفعلي، مع دعم أشهر هيئات الحساب الإسلامية عالمياً وبوصلة رقمية لتحديد القبلة بدقة.
+                    </p>
+                </div>
+                <div class="bento-footer-tag">
+                    <span>تحديث الموقع التلقائي بلمسة واحدة</span>
+                </div>
+            </div>
+
+            <!-- 3. Card (4 Columns): Interactive Tasbih & Haptics -->
+            <div class="bento-card col-4" data-aos="fade-up" data-aos-delay="100">
+                <div>
+                    <div class="bento-icon-wrapper">
+                        <i class="fa-solid fa-hand-holding-heart"></i>
+                    </div>
+                    <h3 class="bento-card-title">المسبحة الإلكترونية واهتزاز Haptic</h3>
+                    <p class="bento-card-desc">
+                        تجربة لمسية واقعية مع كل تسبيحة، استهداف ذكي للأعداد، وإمكانية إضافة أورادك الخاصة ومتابعة إجمالي التسبيحات التاريخية.
+                    </p>
+                </div>
+                <div class="bento-footer-tag">
+                    <span>اهتزاز تفاعلي • أذكار الصباح والمساء</span>
+                </div>
+            </div>
+
+            <!-- 4. Card (4 Columns): Live Quran Radios -->
+            <div class="bento-card col-4" data-aos="fade-up" data-aos-delay="200">
+                <div>
+                    <div class="bento-icon-wrapper">
+                        <i class="fa-solid fa-radio"></i>
+                    </div>
+                    <h3 class="bento-card-title">إذاعات القرآن المباشرة 24/7</h3>
+                    <p class="bento-card-desc">
+                        بث صوتي عالي النقاء لأكثر من 15 إذاعة من القاهرة، مكة، وتلاوات خاشعة لأشهر القراء مع مشغل خلفية موفر للطاقة.
+                    </p>
+                </div>
+                <div class="bento-footer-tag">
+                    <span>تشغيل بالخلفية • صوت محيطي نقي</span>
+                </div>
+            </div>
+
+            <!-- 5. Card (4 Columns): Insights & Analytics -->
+            <div class="bento-card col-4" data-aos="fade-up" data-aos-delay="300">
+                <div>
+                    <div class="bento-icon-wrapper">
+                        <i class="fa-solid fa-chart-pie"></i>
+                    </div>
+                    <h3 class="bento-card-title">إحصائيات الإنجاز والالتزام</h3>
+                    <p class="bento-card-desc">
+                        لوحة بيانية توضح التزامك الأسبوعي بالصلوات في وقتها، عدد الصفحات المقروءة، والتسبيحات المنجزة لمساعدتك على الاستمرار.
+                    </p>
+                </div>
+                <div class="bento-footer-tag">
+                    <span>رسوم بيانية تحفيزية • تتبع الختمات</span>
+                </div>
+            </div>
+
+            <!-- 6. Card (12 Columns): Zakat, Cards, & Privacy -->
+            <div class="bento-card col-12" style="background: linear-gradient(135deg, rgba(245, 211, 114, 0.06) 0%, rgba(18, 26, 22, 0.8) 100%);" data-aos="fade-up" data-aos-delay="200">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 30px;">
+                    <div>
+                        <h3 class="bento-card-title" style="font-size: 1.8rem;">حاسبة الزكاة الدقيقة، أسماء الله الحسنى، وبطاقات الإهداء</h3>
+                        <p class="bento-card-desc" style="max-width: 650px;">
+                            احسب زكاة أموالك والذهب وفق النصاب الشرعي بسهولة، استكشف معاني أسماء الله الحسنى، وشارك بطاقات أدعية بتصاميم إسلامية راقية مع عائلتك وأصدقائك.
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <span class="gps-orbit-badge" style="background: rgba(245, 211, 114, 0.1); border-color: rgba(245, 211, 114, 0.3); color: var(--gold-apple); padding: 8px 16px;">
+                            <i class="fa-solid fa-calculator"></i> حاسبة الزكاة
+                        </span>
+                        <span class="gps-orbit-badge" style="background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.1); color: #FFFFFF; padding: 8px 16px;">
+                            <i class="fa-solid fa-share-nodes"></i> بطاقات إيمانية
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FATAWA VAULT: Curated Scholar Fatwas -->
+    <section class="pro-section" id="fatawa">
+        <div class="section-headline" data-aos="fade-up">
+            <span class="section-tag"><i class="fa-solid fa-scale-balanced"></i> الفقه الإسلامي الموثق</span>
+            <h2 class="section-title-large">موسوعة فتاوى كبار العلماء المعتمدة</h2>
+            <p class="section-desc-sub">
+                إجابات فقهية محررة ومحققة من كبار الأئمة والمواقع الفقهية الموثوقة: سماحة الشيخ عبد العزيز بن باز، فضيلة الشيخ محمد بن صالح العثيمين، ومركز الفتوى بموقع إسلام ويب.
+            </p>
+        </div>
+
+        <!-- Filter tabs -->
+        <div class="fatwa-filter-tabs" data-aos="fade-up">
+            <div class="fatwa-tab active" onclick="filterFatwa('all')">
+                <i class="fa-solid fa-layer-group"></i> جميع الفتاوى
+            </div>
+            <div class="fatwa-tab" onclick="filterFatwa('binbaz')">
+                <i class="fa-solid fa-book-bookmark"></i> فتاوى الشيخ ابن باز
+            </div>
+            <div class="fatwa-tab" onclick="filterFatwa('othaymeen')">
+                <i class="fa-solid fa-scroll"></i> فتاوى الشيخ ابن عثيمين
+            </div>
+            <div class="fatwa-tab" onclick="filterFatwa('islamweb')">
+                <i class="fa-solid fa-globe"></i> مركز فتاوى إسلام ويب
+            </div>
+        </div>
+
+        <!-- Fatwa Cards Grid -->
+        <div class="fatwa-grid">
+            <!-- Fatwa 1: Bin Baz - Prayer -->
+            <div class="fatwa-card" data-scholar="binbaz" data-aos="fade-up" data-aos-delay="100">
+                <div>
+                    <div class="fatwa-header">
+                        <span class="scholar-badge badge-binbaz">
+                            <i class="fa-solid fa-user-check"></i> الشيخ ابن باز رحمه الله
+                        </span>
+                        <span style="font-size: 0.72rem; color: var(--gold-apple);">الصلاة والعبادات</span>
+                    </div>
+                    <h4 class="fatwa-question">ما حكم من نام عن صلاة الفجر حتى طلعت الشمس؟</h4>
+                    <p class="fatwa-answer">
+                        "من نام عن الصلاة أو نسيها فليصلها إذا ذكرها لا كفارة لها إلا ذلك، فيصلي سنة الفجر أولاً ثم يصلي الفريضة كما رتبها النبي ﷺ، ولا إثم عليه إذا كان غلبه النوم ولم يفرط في الأسباب."
+                    </p>
+                </div>
+                <div class="fatwa-source">
+                    <i class="fa-solid fa-link"></i>
+                    <span>المصدر: مجموع فتاوى ومقالات متنوعة (المجلد 10 - ص 374)</span>
+                </div>
+            </div>
+
+            <!-- Fatwa 2: Othaymeen - Quran Phone -->
+            <div class="fatwa-card" data-scholar="othaymeen" data-aos="fade-up" data-aos-delay="200">
+                <div>
+                    <div class="fatwa-header">
+                        <span class="scholar-badge badge-othaymeen">
+                            <i class="fa-solid fa-user-check"></i> الشيخ ابن عثيمين رحمه الله
+                        </span>
+                        <span style="font-size: 0.72rem; color: var(--gold-apple);">القرآن والطهارة</span>
+                    </div>
+                    <h4 class="fatwa-question">هل يشترط الوضوء لقراءة القرآن الكريم من شاشات الهواتف والتطبيقات؟</h4>
+                    <p class="fatwa-answer">
+                        "القراءة من أجهزة الجوالات لا يشترط لها الطهارة من الحدث الأصغر؛ لأن الجوال ليس مصحفاً في الحقيقة بل هو ذبذبات وشاشات تظهر الحروف، فيجوز مسه وقراءة القرآن منه بغير وضوء."
+                    </p>
+                </div>
+                <div class="fatwa-source">
+                    <i class="fa-solid fa-link"></i>
+                    <span>المصدر: فتاوى نور على الدرب (شريط رقم 368)</span>
+                </div>
+            </div>
+
+            <!-- Fatwa 3: IslamWeb - GPS Prayer -->
+            <div class="fatwa-card" data-scholar="islamweb" data-aos="fade-up" data-aos-delay="300">
+                <div>
+                    <div class="fatwa-header">
+                        <span class="scholar-badge badge-islamweb">
+                            <i class="fa-solid fa-check-double"></i> إسلام ويب (IslamWeb)
+                        </span>
+                        <span style="font-size: 0.72rem; color: var(--gold-apple);">التقنية والمواقيت</span>
+                    </div>
+                    <h4 class="fatwa-question">حكم الاعتماد على تطبيقات الهواتف الذكية في تحديد مواقيت الصلاة والقبلة؟</h4>
+                    <p class="fatwa-answer">
+                        "يجوز الاعتماد على التطبيقات الموثوقة التي تعتمد الحسابات الفلكية المعتمدة لدى الهيئات الإسلامية الرسمية وخاصية الـ GPS، وهي وسيلة معاصرة معتبرة ومحققة للظن الراجح بدخول الوقت واتجاه القبلة."
+                    </p>
+                </div>
+                <div class="fatwa-source">
+                    <i class="fa-solid fa-link"></i>
+                    <span>المصدر: مركز الفتوى - إسلام ويب (فتوى رقم: 284192)</span>
+                </div>
+            </div>
+
+            <!-- Fatwa 4: Bin Baz - Fasting -->
+            <div class="fatwa-card" data-scholar="binbaz" data-aos="fade-up" data-aos-delay="100">
+                <div>
+                    <div class="fatwa-header">
+                        <span class="scholar-badge badge-binbaz">
+                            <i class="fa-solid fa-user-check"></i> الشيخ ابن باز رحمه الله
+                        </span>
+                        <span style="font-size: 0.72rem; color: var(--gold-apple);">الصيام والاعتكاف</span>
+                    </div>
+                    <h4 class="fatwa-question">ما حكم استعمال بخاخ الربو وقطرة العين للصائم؟</h4>
+                    <p class="fatwa-answer">
+                        "بخاخ الربو جائز للصائم ولا يفطر؛ لأنه غاز يذهب إلى الرئة وليس أكلاً ولا شرباً، وكذلك قطرة العين والأذن والصحيح أنها لا تفطر وإن وجد طعمها في حلقه لأنها ليست منفذاً معتاداً للغذاء."
+                    </p>
+                </div>
+                <div class="fatwa-source">
+                    <i class="fa-solid fa-link"></i>
+                    <span>المصدر: فتاوى الدعوة للشيخ ابن باز (2/165)</span>
+                </div>
+            </div>
+
+            <!-- Fatwa 5: Othaymeen - Zakat Stocks -->
+            <div class="fatwa-card" data-scholar="othaymeen" data-aos="fade-up" data-aos-delay="200">
+                <div>
+                    <div class="fatwa-header">
+                        <span class="scholar-badge badge-othaymeen">
+                            <i class="fa-solid fa-user-check"></i> الشيخ ابن عثيمين رحمه الله
+                        </span>
+                        <span style="font-size: 0.72rem; color: var(--gold-apple);">الزكاة والمعاملات</span>
+                    </div>
+                    <h4 class="fatwa-question">كيف تحسب زكاة الأسهم الاستثمارية وأسهم المضاربة؟</h4>
+                    <p class="fatwa-answer">
+                        "الأسهم إن كانت للتجارة والمضاربة فتزكى قيمتها السوقية مع الأرباح بنسبة ربع العشر (2.5%) عند تمام الحول. وإن كانت للاستثمار السنوي والاستفادة من عوائدها فقط، فتزكى أرباحها فقط إذا بلغت النصاب وحال عليها الحول."
+                    </p>
+                </div>
+                <div class="fatwa-source">
+                    <i class="fa-solid fa-link"></i>
+                    <span>المصدر: فقه العبادات للشيخ ابن عثيمين (ص 214)</span>
+                </div>
+            </div>
+
+            <!-- Fatwa 6: IslamWeb - Electronic Tasbih -->
+            <div class="fatwa-card" data-scholar="islamweb" data-aos="fade-up" data-aos-delay="300">
+                <div>
+                    <div class="fatwa-header">
+                        <span class="scholar-badge badge-islamweb">
+                            <i class="fa-solid fa-check-double"></i> إسلام ويب (IslamWeb)
+                        </span>
+                        <span style="font-size: 0.72rem; color: var(--gold-apple);">الأذكار والتسبيح</span>
+                    </div>
+                    <h4 class="fatwa-question">حكم استخدام المسبحة الإلكترونية وتطبيقات العداد الرقمي في الأذكار؟</h4>
+                    <p class="fatwa-answer">
+                        "التسبيح بالأصابع والأنامل أفضل لقوله ﷺ: (واعقدن بالأنامل فإنهن مسؤولات ومستنطقات)، واستعمال المسبحة أو العداد الإلكتروني جائز لا حرج فيه للمساعدة على ضبط العدد إذا سلم من الرياء."
+                    </p>
+                </div>
+                <div class="fatwa-source">
+                    <i class="fa-solid fa-link"></i>
+                    <span>المصدر: مركز الفتوى - إسلام ويب (فتوى رقم: 15482)</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 500 ROADMAP & MEGA ADDITIONS ACCORDION SECTION -->
+    <section class="pro-section" id="roadmap">
+        <div class="section-headline" data-aos="fade-up">
+            <span class="section-tag"><i class="fa-solid fa-code-branch"></i> الخريطة الشاملة للتطبيق</span>
+            <h2 class="section-title-large">خريطة الـ 500 إضافة وميزة إيمانية</h2>
+            <p class="section-desc-sub">
+                خطة تطويرية موسوعية مقسمة إلى 15 محوراً تغطي كل تفاصيل واحتياجات المسلم والأسرة المسلمة في هذا العصر.
+            </p>
+        </div>
+
+        <div class="roadmap-container" data-aos="fade-up">
+            
+            <!-- Axis 1: Quran -->
+            <div class="roadmap-category open">
+                <div class="category-header" onclick="toggleRoadmap(this)">
+                    <div class="category-info">
+                        <div class="cat-icon-circle"><i class="fa-solid fa-book-quran"></i></div>
+                        <div class="cat-title-text">
+                            <h4>1. القرآن الكريم والتلاوة والتدبر</h4>
+                            <span>تلاوات 50+ قارئ، التجويد، الترجمات، والختمات</span>
+                        </div>
+                    </div>
+                    <div class="cat-count-pill">40 ميزة • 1–40</div>
+                </div>
+                <div class="category-items-grid">
+                    <div class="roadmap-item"><span class="item-num">01</span><span>تلاوات صوتية لأكثر من 50 قارئاً مع التحميل أوفلاين</span></div>
+                    <div class="roadmap-item"><span class="item-num">02</span><span>تكرار الآيات التلقائي لتسهيل الحفظ والمراجعة</span></div>
+                    <div class="roadmap-item"><span class="item-num">03</span><span>التلاوة كلمة بكلمة مع التظليل المتزامن</span></div>
+                    <div class="roadmap-item"><span class="item-num">04</span><span>إعراب القرآن الكريم كاملاً مع القواعد النحوية</span></div>
+                    <div class="roadmap-item"><span class="item-num">05</span><span>أسباب النزول الموثقة لكل آية وسورة</span></div>
+                    <div class="roadmap-item"><span class="item-num">06</span><span>مقارنة التفاسير المتعددة (ابن كثير، الطبري، السعدي)</span></div>
+                    <div class="roadmap-item"><span class="item-num">07</span><span>التفسير الموضوعي وتصنيف الآيات حسب المواضيع</span></div>
+                    <div class="roadmap-item"><span class="item-num">08</span><span>ترجمة معاني القرآن لأكثر من 35 لغة عالمية</span></div>
+                    <div class="roadmap-item"><span class="item-num">09</span><span>الترجمة الصوتية الفورية لمعاني الآيات</span></div>
+                    <div class="roadmap-item"><span class="item-num">10</span><span>مصحف التجويد الملون مع دليل مخارج الحروف</span></div>
+                    <div class="roadmap-item"><span class="item-num">11</span><span>اختبارات تفاعلية في حفظ الآيات وترتيبها</span></div>
+                    <div class="roadmap-item"><span class="item-num">12</span><span>البحث الصوتي عن الآيات بمجرد قراءتها</span></div>
+                    <div class="roadmap-item"><span class="item-num">13</span><span>التعرف على الآيات المكتوبة عبر كاميرا الهاتف (OCR)</span></div>
+                    <div class="roadmap-item"><span class="item-num">14</span><span>وضع المصحف المظلم الحقيقي لشاشات OLED</span></div>
+                    <div class="roadmap-item"><span class="item-num">15</span><span>المصحف الشمرلي، ومصحف المدينة القديم</span></div>
+                    <div class="roadmap-item"><span class="item-num">16</span><span>التمرير التلقائي للصفحات أثناء القراءة</span></div>
+                    <div class="roadmap-item"><span class="item-num">17</span><span>صانع بطاقات الآيات مع الخطوط الإسلامية</span></div>
+                    <div class="roadmap-item"><span class="item-num">18</span><span>مؤشر التكرار المتباعد لتثبيت الحفظ (Spaced Repetition)</span></div>
+                </div>
+            </div>
+
+            <!-- Axis 2: Prayers & GPS -->
+            <div class="roadmap-category">
+                <div class="category-header" onclick="toggleRoadmap(this)">
+                    <div class="category-info">
+                        <div class="cat-icon-circle"><i class="fa-solid fa-kaaba"></i></div>
+                        <div class="cat-title-text">
+                            <h4>2. مواقيت الصلاة، الأذان، والمساجد</h4>
+                            <span>حساب فلكي GPS، أذان الحرمين، بوصلة AR، والسنن</span>
+                        </div>
+                    </div>
+                    <div class="cat-count-pill">40 ميزة • 41–80</div>
+                </div>
+                <div class="category-items-grid">
+                    <div class="roadmap-item"><span class="item-num">41</span><span>كتم الصوت التلقائي في المسجد عبر الموقع الجغرافي</span></div>
+                    <div class="roadmap-item"><span class="item-num">42</span><span>تنبيهات الاستعداد للوضوء قبل الأذان بدقائق</span></div>
+                    <div class="roadmap-item"><span class="item-num">43</span><span>أصوات أذان الحرم المكي، المدني، والمسجد الأقصى</span></div>
+                    <div class="roadmap-item"><span class="item-num">44</span><span>منبه قيام الليل وحساب الثلث الأخير بدقة فلكية</span></div>
+                    <div class="roadmap-item"><span class="item-num">45</span><span>بوصلة القبلة بالواقع المعزز (AR Camera Qibla)</span></div>
+                    <div class="roadmap-item"><span class="item-num">46</span><span>خريطة المساجد القريبة مع إمكانية الملاحة</span></div>
+                    <div class="roadmap-item"><span class="item-num">47</span><span>تتبع السنن الرواتب والنوافل وحاسبة قضاء الفائتة</span></div>
+                    <div class="roadmap-item"><span class="item-num">48</span><span>وضع السفر وحساب رخص الجمع والقصر تلقائياً</span></div>
+                    <div class="roadmap-item"><span class="item-num">49</span><span>دعم ساعات Wear OS و Apple Watch لعرض المواقيت</span></div>
+                    <div class="roadmap-item"><span class="item-num">50</span><span>دعم إشعارات Dynamic Island و Live Activities</span></div>
+                </div>
+            </div>
+
+            <!-- Axis 3: Athkar & Tasbih -->
+            <div class="roadmap-category">
+                <div class="category-header" onclick="toggleRoadmap(this)">
+                    <div class="category-info">
+                        <div class="cat-icon-circle"><i class="fa-solid fa-hands-praying"></i></div>
+                        <div class="cat-title-text">
+                            <h4>3. الأذكار، الأدعية، والمسبحة التفاعلية</h4>
+                            <span>حصن المسلم، مسبحة بالاهتزاز اللمسي، وأدعية الأنبياء</span>
+                        </div>
+                    </div>
+                    <div class="cat-count-pill">40 ميزة • 81–120</div>
+                </div>
+                <div class="category-items-grid">
+                    <div class="roadmap-item"><span class="item-num">81</span><span>أذكار الصباح والمساء مسموعة ومقروءة بمؤشر إنجاز</span></div>
+                    <div class="roadmap-item"><span class="item-num">82</span><span>مسبحة إلكترونية بأزرار الصوت واللمس العشوائي</span></div>
+                    <div class="roadmap-item"><span class="item-num">83</span><span>عداد الاستغفار التراكمي وتحديات التسبيح</span></div>
+                    <div class="roadmap-item"><span class="item-num">84</span><span>الرقية الشرعية الكاملة من الكتاب والسنة</span></div>
+                    <div class="roadmap-item"><span class="item-num">85</span><span>أدعية تفريج الكروب وقضاء الدين المأثورة</span></div>
+                    <div class="roadmap-item"><span class="item-num">86</span><span>إنشاء صفحة دعاء للمتوفى ومشاركتها كصدقة جارية</span></div>
+                </div>
+            </div>
+
+            <!-- Axis 4: Audio & Radios -->
+            <div class="roadmap-category">
+                <div class="category-header" onclick="toggleRoadmap(this)">
+                    <div class="category-info">
+                        <div class="cat-icon-circle"><i class="fa-solid fa-radio"></i></div>
+                        <div class="cat-title-text">
+                            <h4>4. الصوتيات، الإذاعات المباشرة، والبودكاست</h4>
+                            <span>إذاعة القاهرة ومكة، بث الحرمين، ودعم Android Auto</span>
+                        </div>
+                    </div>
+                    <div class="cat-count-pill">30 ميزة • 121–150</div>
+                </div>
+                <div class="category-items-grid">
+                    <div class="roadmap-item"><span class="item-num">121</span><span>إذاعة القرآن الكريم من القاهرة ومكة المكرمة 24/7</span></div>
+                    <div class="roadmap-item"><span class="item-num">122</span><span>بث حي ومباشر للحرمين الشريفين على مدار الساعة</span></div>
+                    <div class="roadmap-item"><span class="item-num">123</span><span>دعم أنظمة السيارات Android Auto و Apple CarPlay</span></div>
+                    <div class="roadmap-item"><span class="item-num">124</span><span>مؤقت النوم التلقائي للصوتيات والتلاوات</span></div>
+                </div>
+            </div>
+
+            <!-- Axis 5: Zakat & Finance -->
+            <div class="roadmap-category">
+                <div class="category-header" onclick="toggleRoadmap(this)">
+                    <div class="category-info">
+                        <div class="cat-icon-circle"><i class="fa-solid fa-coins"></i></div>
+                        <div class="cat-title-text">
+                            <h4>5. حاسبة الزكاة، الصدقات، والمواريث</h4>
+                            <span>زكاة الذهب والأسهم، حاسبة المواريث الشرعية، والوصية</span>
+                        </div>
+                    </div>
+                    <div class="cat-count-pill">30 ميزة • 151–180</div>
+                </div>
+                <div class="category-items-grid">
+                    <div class="roadmap-item"><span class="item-num">151</span><span>حاسبة زكاة الذهب والفضة مع تحديث الأسعار الحية</span></div>
+                    <div class="roadmap-item"><span class="item-num">152</span><span>حاسبة زكاة الأسهم والمضاربة وفق القرارات الفقهية</span></div>
+                    <div class="roadmap-item"><span class="item-num">153</span><span>برنامج حساب المواريث الشرعية بالرسم الشجري</span></div>
+                    <div class="roadmap-item"><span class="item-num">154</span><span>نموذج تحرير الوصية الشرعية مشفرة محلياً</span></div>
+                </div>
+            </div>
+
+            <!-- Axis 6 to 15 Summarized in Sleek Bento style -->
+            <div class="roadmap-category">
+                <div class="category-header" onclick="toggleRoadmap(this)">
+                    <div class="category-info">
+                        <div class="cat-icon-circle"><i class="fa-solid fa-shapes"></i></div>
+                        <div class="cat-title-text">
+                            <h4>6–15. التقويم، السنة، الطفل، الإحصائيات، والأجهزة الذكية</h4>
+                            <span>تتبع الصيام، وضع الطفل، لغات العالم، والأنظمة المنزلية الذكية</span>
+                        </div>
+                    </div>
+                    <div class="cat-count-pill">320 ميزة • 181–500</div>
+                </div>
+                <div class="category-items-grid">
+                    <div class="roadmap-item"><span class="item-num">181</span><span>تقويم هجري وميلادي متزامن وتتبع صيام النوافل</span></div>
+                    <div class="roadmap-item"><span class="item-num">211</span><span>صحيح البخاري ومسلم وتخريج الأحاديث ودرجة صحتها</span></div>
+                    <div class="roadmap-item"><span class="item-num">251</span><span>سمات ألوان تيتانيوم فاخرة وخطوط عربية ملكية</span></div>
+                    <div class="roadmap-item"><span class="item-num">281</span><span>وضع الطفل المسلم وشجرة الصلاة التحفيزية</span></div>
+                    <div class="roadmap-item"><span class="item-num">311</span><span>دعم 15 لغة عالمية ودليل المهتدي الجديد</span></div>
+                    <div class="roadmap-item"><span class="item-num">341</span><span>لوحة إحصائيات وسلسلة الأيام المتتالية (Streaks)</span></div>
+                    <div class="roadmap-item"><span class="item-num">401</span><span>أمان فائق، 0 إعلانات، 100% أوفلاين، وخصوصية تامة</span></div>
+                    <div class="roadmap-item"><span class="item-num">431</span><span>تكامل مع شاشات Android TV، الساعات الذكية، والمنازل الذكية</span></div>
+                    <div class="roadmap-item"><span class="item-num">461</span><span>مبادرات إيمانية وخواطر تزكية النفس والصدقات الجارية</span></div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Specs Section -->
+    <section class="specs-strip-section" id="specs">
+        <div class="specs-container" data-aos="zoom-in" data-aos-duration="800">
+            <div class="spec-box">
+                <h5 class="highlight-gold">0.0</h5>
+                <p>إعلانات نهائياً (خالٍ 100%)</p>
+            </div>
+            <div class="spec-box">
+                <h5>500+</h5>
+                <p>ميزة وإضافة مدروسة</p>
+            </div>
+            <div class="spec-box">
+                <h5 class="highlight-gold">3 مراجع</h5>
+                <p>ابن باز، ابن عثيمين، إسلام ويب</p>
+            </div>
+            <div class="spec-box">
+                <h5>&lt; 25 MB</h5>
+                <p>حجم خفيف جداً على الذاكرة</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Download Grand CTA Section -->
+    <section class="cta-grand-section" id="download">
+        <div class="cta-grand-card" data-aos="fade-up" data-aos-duration="1000">
+            <div class="hero-eyebrow" style="margin-bottom: 20px;">
+                <i class="fa-solid fa-cloud-arrow-down"></i>
+                <span>جاهز للتثبيت الفوري</span>
+            </div>
+
+            <h2 class="cta-grand-title">ابدأ رحلتك الإيمانية اليوم.</h2>
+            <p class="cta-grand-desc">
+                حمّل ملف الـ APK المباشر وثبته على هاتفك الأندرويد في ثوانٍ معدودة دون الحاجة لحساب أو اشتراك.
+            </p>
+
+            <a href="app-release.apk" download class="btn-apple-primary" style="font-size: 1.2rem; padding: 20px 48px;">
+                <i class="fa-solid fa-arrow-down-to-line fa-lg"></i>
+                <span>تحميل ملف APK المباشر (مجاناً)</span>
+            </a>
+
+            <!-- 3 Minimalist Steps -->
+            <div class="installation-steps">
+                <div class="apple-step-pill">
+                    <div class="step-badge">1</div>
+                    <div class="step-text">
+                        <h6>تحميل ملف الـ APK</h6>
+                        <p>اضغط على زر التنزيل لحفظ ملف التثبيت.</p>
+                    </div>
+                </div>
+
+                <div class="apple-step-pill">
+                    <div class="step-badge">2</div>
+                    <div class="step-text">
+                        <h6>الموافقة على التثبيت</h6>
+                        <p>افتح الملف واضغط "تثبيت" من مدير التنزيلات.</p>
+                    </div>
+                </div>
+
+                <div class="apple-step-pill">
+                    <div class="step-badge">3</div>
+                    <div class="step-text">
+                        <h6>ابدأ باستخدام التطبيق</h6>
+                        <p>استمتع بتجربة إيمانية متكاملة ومباركة.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Apple-Style Minimal Footer -->
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <div class="brand-logo-gem" style="width: 26px; height: 26px; font-size: 12px;">
+                        <i class="fa-solid fa-mosque"></i>
+                    </div>
+                    <span>الورد اليومي | رفيق المسلم</span>
+                </div>
+
+                <div class="footer-verse">
+                    "وَمَن يَتَّقِ اللَّهَ يَجْعَل لَّهُ مَخْرَجًا"
+                </div>
+
+                <div class="footer-links">
+                    <a href="#features">المميزات</a>
+                    <a href="#fatawa">الفتاوى الموثقة</a>
+                    <a href="#roadmap">الـ 500 إضافة</a>
+                    <a href="#download">التحميل</a>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div>صدقة جارية • متاح ومجاني لجميع المسلمين لوجه الله تعالى دون أي إعلانات.</div>
+                <div>المراجع الفقهية: فتاوى الشيخ ابن باز، الشيخ ابن عثيمين، ومركز فتوى إسلام ويب.</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- AOS (Animate On Scroll) JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        // Init AOS with smooth Apple-like easing curve
+        AOS.init({
+            duration: 900,
+            easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+            once: true,
+            offset: 60
+        });
+
+        // Toggle Roadmap Accordion Categories
+        function toggleRoadmap(element) {
+            const parent = element.parentElement;
+            parent.classList.toggle('open');
+        }
+
+        // Fatwa Scholar Filter
+        function filterFatwa(scholar) {
+            const tabs = document.querySelectorAll('.fatwa-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            const cards = document.querySelectorAll('.fatwa-card');
+            cards.forEach(card => {
+                if (scholar === 'all' || card.getAttribute('data-scholar') === scholar) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Smooth scroll for anchor navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

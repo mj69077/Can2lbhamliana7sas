@@ -1,0 +1,142 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+
+    <!-- Halo / Glow Backdrop -->
+    <path
+        android:pathData="M100,100m-90,0a90,90 0 1,0 180,0a90,90 0 1,0 -180,0">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="100"
+                android:centerY="100"
+                android:gradientRadius="90"
+                android:type="radial">
+                <item android:color="#33E2B84D" android:offset="0.0"/>
+                <item android:color="#0007221A" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Marble Base Plinth (Shadharwan) -->
+    <path
+        android:pathData="M35,155 L100,185 L165,155 L100,125 Z"
+        android:fillColor="#FFE8ECEF"/>
+    <path
+        android:pathData="M35,155 L100,185 L100,192 L35,162 Z"
+        android:fillColor="#FFB0BEC5"/>
+    <path
+        android:pathData="M100,185 L165,155 L165,162 L100,192 Z"
+        android:fillColor="#FFCFD8DC"/>
+
+    <!-- Kaaba Left Wall (Isometric perspective) -->
+    <path
+        android:pathData="M40,75 L100,105 L100,175 L40,145 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="40"
+                android:startY="75"
+                android:endX="100"
+                android:endY="175"
+                android:type="linear">
+                <item android:color="#FF1A1A1A" android:offset="0.0"/>
+                <item android:color="#FF0D0D0D" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Kaaba Right Wall (Isometric perspective) -->
+    <path
+        android:pathData="M100,105 L160,75 L160,145 L100,175 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="100"
+                android:startY="105"
+                android:endX="160"
+                android:endY="145"
+                android:type="linear">
+                <item android:color="#FF2D2D2D" android:offset="0.0"/>
+                <item android:color="#FF141414" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Kaaba Roof (Isometric perspective) -->
+    <path
+        android:pathData="M100,45 L160,75 L100,105 L40,75 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="100"
+                android:startY="45"
+                android:endX="100"
+                android:endY="105"
+                android:type="linear">
+                <item android:color="#FF383838" android:offset="0.0"/>
+                <item android:color="#FF1F1F1F" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Golden Kiswah Upper Belt (Left Face) -->
+    <path
+        android:pathData="M40,90 L100,120 L100,128 L40,98 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="40"
+                android:startY="90"
+                android:endX="100"
+                android:endY="128"
+                android:type="linear">
+                <item android:color="#FFF5E6A3" android:offset="0.0"/>
+                <item android:color="#FFE2B84D" android:offset="0.5"/>
+                <item android:color="#FFB3861B" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Golden Kiswah Upper Belt (Right Face) -->
+    <path
+        android:pathData="M100,120 L160,90 L160,98 L100,128 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="100"
+                android:startY="120"
+                android:endX="160"
+                android:endY="98"
+                android:type="linear">
+                <item android:color="#FFFFEEB3" android:offset="0.0"/>
+                <item android:color="#FFE2B84D" android:offset="0.5"/>
+                <item android:color="#FFC29828" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Golden Door of Kaaba (Bab Al-Kaaba) on Right Face -->
+    <path
+        android:pathData="M112,126 L132,116 L132,154 L112,164 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="112"
+                android:startY="116"
+                android:endX="132"
+                android:endY="164"
+                android:type="linear">
+                <item android:color="#FFFFF4C4" android:offset="0.0"/>
+                <item android:color="#FFE2B84D" android:offset="0.5"/>
+                <item android:color="#FF966F0F" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Golden Spout of Mercy (Mizab Al-Rahmah) on Left Roof Edge -->
+    <path
+        android:pathData="M68,60 L62,57 L62,54 L68,57 Z"
+        android:fillColor="#FFFFD700"/>
+
+    <!-- Black Stone Silver Casing (Hajar Al-Aswad) corner indicator -->
+    <path
+        android:pathData="M100,172 a3,3 0 1,0 0.1,0 Z"
+        android:fillColor="#FFFFFFFF"/>
+</vector>

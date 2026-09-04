@@ -1,0 +1,40 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="60dp"
+    android:height="240dp"
+    android:viewportWidth="60"
+    android:viewportHeight="240">
+
+    <!-- Top Half Pointing to Kaaba (Gold & Emerald) -->
+    <path
+        android:pathData="M30,12 L42,120 L30,108 L18,120 Z"
+        android:fillColor="#E2B84D" />
+    <path
+        android:pathData="M30,12 L30,108 L18,120 Z"
+        android:fillColor="#D4A437" />
+
+    <!-- Kaaba Icon at the tip of the needle -->
+    <!-- Kaaba Base -->
+    <path
+        android:pathData="M24,20 L36,20 L36,32 L24,32 Z"
+        android:fillColor="#111111" />
+    <!-- Kaaba Golden Belt (Kiswa) -->
+    <path
+        android:pathData="M24,24 L36,24 L36,26 L24,26 Z"
+        android:fillColor="#F4D03F" />
+
+    <!-- Bottom Counter-weight (Dark Emerald/Grey) -->
+    <path
+        android:pathData="M30,228 L40,120 L30,132 L20,120 Z"
+        android:fillColor="#134533" />
+    <path
+        android:pathData="M30,228 L30,132 L20,120 Z"
+        android:fillColor="#0D2E22" />
+
+    <!-- Center Pivot Ring -->
+    <path
+        android:pathData="M30,106 A14,14 0 1,0 30,134 A14,14 0 1,0 30,106 Z"
+        android:fillColor="#E2B84D" />
+    <path
+        android:pathData="M30,113 A7,7 0 1,0 30,127 A7,7 0 1,0 30,113 Z"
+        android:fillColor="#091F17" />
+</vector>

@@ -1,0 +1,144 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+
+    <!-- Golden Divine Rays -->
+    <path
+        android:pathData="M100,75 L100,20 M100,75 L135,30 M100,75 L155,55 M100,75 L65,30 M100,75 L45,55"
+        android:strokeWidth="1.5"
+        android:strokeColor="#66E2B84D"/>
+
+    <!-- Wooden Rehal (Stand) Base -->
+    <!-- Left Leg -->
+    <path
+        android:pathData="M55,175 L85,130 L100,145 L70,190 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="55"
+                android:startY="130"
+                android:endX="100"
+                android:endY="190"
+                android:type="linear">
+                <item android:color="#FF8D6E63" android:offset="0.0"/>
+                <item android:color="#FF4E342E" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- Right Leg -->
+    <path
+        android:pathData="M145,175 L115,130 L100,145 L130,190 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="100"
+                android:startY="130"
+                android:endX="145"
+                android:endY="190"
+                android:type="linear">
+                <item android:color="#FF6D4C41" android:offset="0.0"/>
+                <item android:color="#FF3E2723" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Quran Cover - Left Wing -->
+    <path
+        android:pathData="M25,85 L98,108 L98,138 L25,115 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="25"
+                android:startY="85"
+                android:endX="98"
+                android:endY="138"
+                android:type="linear">
+                <item android:color="#FF0D4233" android:offset="0.0"/>
+                <item android:color="#FF052219" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- Quran Cover - Right Wing -->
+    <path
+        android:pathData="M175,85 L102,108 L102,138 L175,115 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="102"
+                android:startY="85"
+                android:endX="175"
+                android:endY="138"
+                android:type="linear">
+                <item android:color="#FF0E4737" android:offset="0.0"/>
+                <item android:color="#FF06261C" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Golden Book Edges / Gilding -->
+    <path
+        android:pathData="M30,82 L98,104 L98,108 L30,86 Z"
+        android:fillColor="#FFE2B84D"/>
+    <path
+        android:pathData="M170,82 L102,104 L102,108 L170,86 Z"
+        android:fillColor="#FFE2B84D"/>
+
+    <!-- Left Open Page -->
+    <path
+        android:pathData="M32,78 C55,83 80,95 98,103 L98,128 C80,120 55,108 32,103 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="32"
+                android:startY="78"
+                android:endX="98"
+                android:endY="128"
+                android:type="linear">
+                <item android:color="#FFFFFDF5" android:offset="0.0"/>
+                <item android:color="#FFF3E9D2" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Right Open Page -->
+    <path
+        android:pathData="M168,78 C145,83 120,95 102,103 L102,128 C120,120 145,108 168,103 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="168"
+                android:startY="78"
+                android:endX="102"
+                android:endY="128"
+                android:type="linear">
+                <item android:color="#FFFFFDF5" android:offset="0.0"/>
+                <item android:color="#FFEEDFC0" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Calligraphy lines on left page -->
+    <path android:pathData="M42,88 L88,100" android:strokeWidth="1.2" android:strokeColor="#AA8C6B24"/>
+    <path android:pathData="M42,94 L88,106" android:strokeWidth="1.2" android:strokeColor="#AA8C6B24"/>
+    <path android:pathData="M44,100 L88,112" android:strokeWidth="1.2" android:strokeColor="#AA8C6B24"/>
+    <path android:pathData="M46,106 L86,118" android:strokeWidth="1.2" android:strokeColor="#AA8C6B24"/>
+
+    <!-- Calligraphy lines on right page -->
+    <path android:pathData="M158,88 L112,100" android:strokeWidth="1.2" android:strokeColor="#AA8C6B24"/>
+    <path android:pathData="M158,94 L112,106" android:strokeWidth="1.2" android:strokeColor="#AA8C6B24"/>
+    <path android:pathData="M156,100 L112,112" android:strokeWidth="1.2" android:strokeColor="#AA8C6B24"/>
+    <path android:pathData="M154,106 L114,118" android:strokeWidth="1.2" android:strokeColor="#AA8C6B24"/>
+
+    <!-- Bookmark Ribbon (Golden Tassel) -->
+    <path
+        android:pathData="M100,103 C102,120 108,135 112,155 L106,155 C102,135 98,120 100,103 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="100"
+                android:startY="103"
+                android:endX="112"
+                android:endY="155"
+                android:type="linear">
+                <item android:color="#FFE2B84D" android:offset="0.0"/>
+                <item android:color="#FFB3861B" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+</vector>
