@@ -4,4 +4,12 @@
     <string name="widget_description">متابعة قراءة القرآن والمهام اليومية والأذكار ومواقيت الصلاة</string>
     <string name="widget_prayer_title">مواقيت الصلاة والقبلة</string>
     <string name="widget_prayer_description">مواقيت الصلوات الخمس مع عداد الصلاة القادمة واتجاه القبلة</string>
+    <string name="widget_lockscreen_title">صلاة القفل وموعد الأذان</string>
+    <string name="widget_lockscreen_description">ويدجت شاشة القفل والشاشة الرئيسية لمتابعة الصلاة القادمة والوقت المتبقي والتاريخ الهجري</string>
+    <string name="widget_tasbih_title">سبحة الورد السريعة</string>
+    <string name="widget_tasbih_description">سبحة إلكترونية تفاعلية للشاشة الرئيسية وشاشة القفل للتسبيح المباشر</string>
+    <string name="widget_sunnah_title">سنة اليوم النبوية</string>
+    <string name="widget_sunnah_description">عرض يومي لسنة نبوية شريفة مع الحديث والأجر والفضل</string>
+    <string name="widget_athkar_compact_title">ذكر وتحصين اليوم</string>
+    <string name="widget_athkar_compact_description">أذكار مأثورة وأدعية التحصين اليومي من حصن المسلم للشاشة</string>
 </resources>

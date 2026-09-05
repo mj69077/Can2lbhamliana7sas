@@ -70,6 +70,7 @@ fun DailyDashboardScreen(
     var showHisnMuslimDialog by remember { mutableStateOf(false) }
     var showMoshafLibraryDialog by remember { mutableStateOf(false) }
     var showPushNotificationDialog by remember { mutableStateOf(false) }
+    var showWidgetsHubDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
     val completedCount = tasks.count { it.isCompleted }
@@ -244,6 +245,13 @@ fun DailyDashboardScreen(
         PushNotificationDialog(
             currentCity = prayerData.locationName,
             onDismiss = { showPushNotificationDialog = false },
+            onShowMessage = { title, msg -> viewModel.showNotification(title, msg) }
+        )
+    }
+
+    if (showWidgetsHubDialog) {
+        WidgetsHubDialog(
+            onDismiss = { showWidgetsHubDialog = false },
             onShowMessage = { title, msg -> viewModel.showNotification(title, msg) }
         )
     }
@@ -786,6 +794,69 @@ fun DailyDashboardScreen(
                         }
 
                         Icon(Icons.Default.ArrowForwardIos, contentDescription = null, tint = IslamicGoldPrimary, modifier = Modifier.size(14.dp))
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Widgets Hub Card (Lockscreen & Home Widgets)
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(14.dp))
+                        .clickable { showWidgetsHubDialog = true },
+                    color = Color(0xFF08261C),
+                    border = BorderStroke(1.2.dp, Color(0xFF00E5FF))
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 14.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(
+                                modifier = Modifier
+                                    .size(38.dp)
+                                    .clip(CircleShape)
+                                    .background(Color(0xFF00E5FF)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(Icons.Default.Widgets, contentDescription = null, tint = Color(0xFF062118), modifier = Modifier.size(22.dp))
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        text = "ويدجات الشاشة وشاشة القفل (6 ويدجات)",
+                                        color = Color(0xFFE0F7FA),
+                                        fontSize = 12.5.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Surface(
+                                        shape = RoundedCornerShape(4.dp),
+                                        color = Color(0x3300E5FF)
+                                    ) {
+                                        Text(
+                                            text = "جديد ✨",
+                                            color = Color(0xFF80DEEA),
+                                            fontSize = 9.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
+                                        )
+                                    }
+                                }
+                                Text(
+                                    text = "صلاة القفل • سبحة سريعة • سنة اليوم • التحصين • المهام",
+                                    color = Color(0xFFB2EBF2),
+                                    fontSize = 10.5.sp
+                                )
+                            }
+                        }
+
+                        Icon(Icons.Default.ArrowForwardIos, contentDescription = null, tint = Color(0xFF80DEEA), modifier = Modifier.size(14.dp))
                     }
                 }
 

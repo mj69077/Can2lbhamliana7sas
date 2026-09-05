@@ -9,4 +9,4 @@
     android:description="@string/widget_prayer_description"
     android:previewImage="@drawable/ic_launcher_background"
     android:resizeMode="horizontal|vertical"
-    android:widgetCategory="home_screen" />
+    android:widgetCategory="home_screen|keyguard" />

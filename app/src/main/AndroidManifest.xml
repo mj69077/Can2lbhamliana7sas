@@ -63,6 +63,60 @@
                 android:resource="@xml/prayer_times_widget_info" />
         </receiver>
 
+        <!-- Lockscreen / Glanceable Compact Prayer Widget -->
+        <receiver
+            android:name=".widget.LockscreenPrayerWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_lockscreen_title">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/lockscreen_prayer_widget_info" />
+        </receiver>
+
+        <!-- Quick Tasbih & Counter Widget -->
+        <receiver
+            android:name=".widget.QuickTasbihWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_tasbih_title">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.example.widget.ACTION_TASBIH_COUNT" />
+                <action android:name="com.example.widget.ACTION_TASBIH_RESET" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/quick_tasbih_widget_info" />
+        </receiver>
+
+        <!-- Daily Sunnah Widget -->
+        <receiver
+            android:name=".widget.DailySunnahWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_sunnah_title">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/daily_sunnah_widget_info" />
+        </receiver>
+
+        <!-- Athkar Compact & Protection Widget -->
+        <receiver
+            android:name=".widget.AthkarCompactWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_athkar_compact_title">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/athkar_compact_widget_info" />
+        </receiver>
+
         <!-- Push Notifications & Islamic Reminders Receiver -->
         <receiver
             android:name=".notification.IslamicNotificationReceiver"
