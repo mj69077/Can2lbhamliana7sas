@@ -156,6 +156,12 @@ class QuranAudioPlayer(private val context: Context) {
 
     fun setSelectedMuezzin(muezzin: Muezzin) {
         _playbackState.value = _playbackState.value.copy(selectedMuezzin = muezzin)
+        try {
+            val prefs = context.getSharedPreferences("islamic_prayer_prefs", Context.MODE_PRIVATE)
+            prefs.edit().putString("selected_muezzin_id", muezzin.id).apply()
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed saving selected muezzin: ${e.message}")
+        }
     }
 
     fun playSurah(surah: Surah, reciter: Reciter = _playbackState.value.currentReciter) {

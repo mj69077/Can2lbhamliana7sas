@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <shortcut
+        android:shortcutId="shortcut_tasbih"
+        android:enabled="true"
+        android:icon="@drawable/ic_notification_crescent"
+        android:shortcutShortLabel="@string/shortcut_tasbih_short"
+        android:shortcutLongLabel="@string/shortcut_tasbih_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.example"
+            android:targetClass="com.example.MainActivity">
+            <extra android:name="INITIAL_TAB" android:value="ATHKAR" />
+            <extra android:name="OPEN_SUB" android:value="TASBIH" />
+        </intent>
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="shortcut_prayer"
+        android:enabled="true"
+        android:icon="@drawable/ic_notification_crescent"
+        android:shortcutShortLabel="@string/shortcut_prayer_short"
+        android:shortcutLongLabel="@string/shortcut_prayer_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.example"
+            android:targetClass="com.example.MainActivity">
+            <extra android:name="INITIAL_TAB" android:value="PRAYER" />
+        </intent>
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="shortcut_quran"
+        android:enabled="true"
+        android:icon="@drawable/ic_notification_crescent"
+        android:shortcutShortLabel="@string/shortcut_quran_short"
+        android:shortcutLongLabel="@string/shortcut_quran_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.example"
+            android:targetClass="com.example.MainActivity">
+            <extra android:name="INITIAL_TAB" android:value="QURAN" />
+        </intent>
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="shortcut_athkar"
+        android:enabled="true"
+        android:icon="@drawable/ic_notification_crescent"
+        android:shortcutShortLabel="@string/shortcut_athkar_short"
+        android:shortcutLongLabel="@string/shortcut_athkar_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.example"
+            android:targetClass="com.example.MainActivity">
+            <extra android:name="INITIAL_TAB" android:value="ATHKAR" />
+        </intent>
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+
+</shortcuts>

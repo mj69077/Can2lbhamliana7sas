@@ -1,6 +1,7 @@
 package com.example
 
 import android.Manifest
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -43,9 +44,38 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         PushNotificationHelper.createNotificationChannels(this)
+        handleIntent(intent)
         setContent {
             DailyWirdTheme {
                 MainAppRoot(viewModel = viewModel)
+            }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        val tabExtra = intent?.getStringExtra("INITIAL_TAB")
+        val action = intent?.action
+        when {
+            tabExtra == "ATHKAR" || action == "ACTION_ATHKAR_ALERT" -> {
+                viewModel.setTab(AppTab.ATHKAR)
+            }
+            tabExtra == "PRAYER" || action == "ACTION_PRAYER_ALERT" -> {
+                viewModel.setTab(AppTab.PRAYER)
+            }
+            tabExtra == "QURAN" || action == "ACTION_QURAN_WIRD" -> {
+                viewModel.setTab(AppTab.QURAN)
+            }
+            tabExtra == "RADIO" -> {
+                viewModel.setTab(AppTab.RADIO)
+            }
+            action == "ACTION_SUNNAH_ALERT" -> {
+                viewModel.setTab(AppTab.DAILY_TASKS)
             }
         }
     }

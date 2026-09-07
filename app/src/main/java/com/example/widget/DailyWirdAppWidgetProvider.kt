@@ -11,6 +11,7 @@ import com.example.MainActivity
 import com.example.R
 import com.example.data.local.AppDatabase
 import com.example.data.network.PrayerCalculationEngine
+import com.example.notification.PrayerAlarmScheduler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -63,7 +64,13 @@ class DailyWirdAppWidgetProvider : AppWidgetProvider() {
                     val pagesRead = quranProgress?.pagesReadToday ?: 0
                     val targetPages = quranProgress?.dailyTargetPages ?: 4
 
-                    val prayerData = PrayerCalculationEngine.calculatePrayerTimes()
+                    val config = PrayerAlarmScheduler.getSavedConfig(context)
+                    val prayerData = PrayerCalculationEngine.calculatePrayerTimes(
+                        latitude = config.latitude,
+                        longitude = config.longitude,
+                        method = config.method,
+                        locationName = config.city
+                    )
 
                     val views = RemoteViews(context.packageName, R.layout.daily_wird_widget).apply {
                         // Header Date & Prayer

@@ -111,6 +111,16 @@ object PushNotificationHelper {
         val pendingIntent = getLaunchPendingIntent(context, "ACTION_PRAYER_ALERT")
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
+        val stopIntent = Intent(context, IslamicNotificationReceiver::class.java).apply {
+            action = IslamicNotificationReceiver.ACTION_STOP_ADHAN
+        }
+        val stopPendingIntent = PendingIntent.getBroadcast(
+            context,
+            999,
+            stopIntent,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
         val builder = NotificationCompat.Builder(context, CHANNEL_PRAYER)
             .setSmallIcon(R.drawable.ic_notification_crescent)
             .setContentTitle("حان الآن موعد أذان $prayerName 🕌")
@@ -127,6 +137,11 @@ object PushNotificationHelper {
             .setContentIntent(pendingIntent)
             .addAction(
                 R.drawable.ic_notification_crescent,
+                "إيقاف الأذان ⏹️",
+                stopPendingIntent
+            )
+            .addAction(
+                R.drawable.ic_notification_crescent,
                 "فتح مواقيت الصلاة",
                 pendingIntent
             )
@@ -134,6 +149,11 @@ object PushNotificationHelper {
         with(NotificationManagerCompat.from(context)) {
             notify(NOTIF_ID_PRAYER, builder.build())
         }
+    }
+
+    fun testPrayerAdhan(context: Context, prayerName: String = "العصر", cityName: String = "مكة المكرمة") {
+        sendPrayerNotification(context, prayerName, "15:30", cityName)
+        AdhanPlaybackService.start(context, prayerName, cityName)
     }
 
     fun sendAthkarNotification(

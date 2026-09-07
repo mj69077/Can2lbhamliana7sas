@@ -38,6 +38,7 @@ import java.util.Calendar
 import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.atan2
+import com.example.notification.PrayerAlarmScheduler
 
 enum class AppTab(val title: String, val iconName: String) {
     DAILY_TASKS("الورد والمهام", "CheckCircle"),
@@ -272,15 +273,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application), S
     val activeTasbihId: StateFlow<Long?> = _activeTasbihId.asStateFlow()
 
     // --- Prayer Times & Qibla ---
-    private val _calculationMethod = MutableStateFlow(CalculationMethod.EGYPTIAN)
+    private val savedPrayerConfig = PrayerAlarmScheduler.getSavedConfig(application)
+
+    private val _calculationMethod = MutableStateFlow(savedPrayerConfig.method)
     val calculationMethod: StateFlow<CalculationMethod> = _calculationMethod.asStateFlow()
 
-    private val _currentCity = MutableStateFlow("القاهرة")
+    private val _currentCity = MutableStateFlow(savedPrayerConfig.city)
     val currentCity: StateFlow<String> = _currentCity.asStateFlow()
 
-    // Cairo Coordinates default
-    private val _userLat = MutableStateFlow(30.0444)
-    private val _userLng = MutableStateFlow(31.2357)
+    // Coordinates restored from persistent storage
+    private val _userLat = MutableStateFlow(savedPrayerConfig.latitude)
+    private val _userLng = MutableStateFlow(savedPrayerConfig.longitude)
 
     private val _isPrayerLoading = MutableStateFlow(false)
     val isPrayerLoading: StateFlow<Boolean> = _isPrayerLoading.asStateFlow()
@@ -290,10 +293,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application), S
 
     private val _prayerTimes = MutableStateFlow(
         PrayerCalculationEngine.calculatePrayerTimes(
-            latitude = 30.0444,
-            longitude = 31.2357,
-            method = CalculationMethod.EGYPTIAN,
-            locationName = "القاهرة"
+            latitude = savedPrayerConfig.latitude,
+            longitude = savedPrayerConfig.longitude,
+            method = savedPrayerConfig.method,
+            locationName = savedPrayerConfig.city
         )
     )
     val prayerTimes: StateFlow<PrayerTimesData> = _prayerTimes.asStateFlow()
@@ -401,7 +404,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application), S
         }
 
         startTimeTicker()
-        initCompassSensor()
+        try {
+            PrayerAlarmScheduler.scheduleNextPrayerAlarms(application)
+            val muezzin = com.example.data.model.MuezzinData.availableMuezzins.find { it.id == savedPrayerConfig.selectedMuezzinId }
+            if (muezzin != null) {
+                audioPlayer.setSelectedMuezzin(muezzin)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     fun setDndPrayerEnabled(enabled: Boolean) {
@@ -470,29 +481,45 @@ class MainViewModel(application: Application) : AndroidViewModel(application), S
         }
     }
 
-    private fun initCompassSensor() {
+    private var isCompassListening = false
+
+    fun startCompassTracking() {
+        if (isCompassListening) return
         try {
             sensorManager = getApplication<Application>().getSystemService(Context.SENSOR_SERVICE) as? SensorManager
             rotationVectorSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
             if (rotationVectorSensor != null) {
-                sensorManager?.registerListener(this, rotationVectorSensor, SensorManager.SENSOR_DELAY_UI)
+                sensorManager?.registerListener(this, rotationVectorSensor, SensorManager.SENSOR_DELAY_NORMAL)
+                isCompassListening = true
             } else {
                 accelerometerSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
                 magnetometerSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
                 var registered = false
                 if (accelerometerSensor != null && magnetometerSensor != null) {
-                    sensorManager?.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_UI)
-                    sensorManager?.registerListener(this, magnetometerSensor, SensorManager.SENSOR_DELAY_UI)
+                    sensorManager?.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL)
+                    sensorManager?.registerListener(this, magnetometerSensor, SensorManager.SENSOR_DELAY_NORMAL)
                     registered = true
                 }
                 if (!registered) {
                     @Suppress("DEPRECATION")
                     val orientationSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_ORIENTATION)
                     orientationSensor?.let {
-                        sensorManager?.registerListener(this, it, SensorManager.SENSOR_DELAY_UI)
+                        sensorManager?.registerListener(this, it, SensorManager.SENSOR_DELAY_NORMAL)
+                        registered = true
                     }
                 }
+                isCompassListening = registered
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    fun stopCompassTracking() {
+        if (!isCompassListening) return
+        try {
+            sensorManager?.unregisterListener(this)
+            isCompassListening = false
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -924,7 +951,26 @@ class MainViewModel(application: Application) : AndroidViewModel(application), S
     // --- Prayer Settings ---
     fun setCalculationMethod(method: CalculationMethod) {
         _calculationMethod.value = method
+        _prayerTimes.value = PrayerCalculationEngine.calculatePrayerTimes(
+            latitude = _userLat.value,
+            longitude = _userLng.value,
+            method = method,
+            locationName = _currentCity.value
+        )
         fetchLivePrayerTimes()
+        try {
+            PrayerAlarmScheduler.saveConfig(
+                context = getApplication(),
+                city = _currentCity.value,
+                latitude = _userLat.value,
+                longitude = _userLng.value,
+                method = method,
+                selectedMuezzinId = audioPlayer.playbackState.value.selectedMuezzin.id
+            )
+            updateAllPrayerWidgets()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         showNotification("تم التغيير", "تم تحديث طريقة الحساب إلى ${method.titleArabic}")
     }
 
@@ -932,8 +978,38 @@ class MainViewModel(application: Application) : AndroidViewModel(application), S
         _currentCity.value = city
         _userLat.value = lat
         _userLng.value = lng
+        _prayerTimes.value = PrayerCalculationEngine.calculatePrayerTimes(
+            latitude = lat,
+            longitude = lng,
+            method = _calculationMethod.value,
+            locationName = city
+        )
         fetchLivePrayerTimes()
-        showNotification("تم تحديد الموقع", "تم ضبط الموقع على $city")
+        try {
+            PrayerAlarmScheduler.saveConfig(
+                context = getApplication(),
+                city = city,
+                latitude = lat,
+                longitude = lng,
+                method = _calculationMethod.value,
+                selectedMuezzinId = audioPlayer.playbackState.value.selectedMuezzin.id
+            )
+            updateAllPrayerWidgets()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        showNotification("تم حفظ الموقع بنجاح 📍", "تم ضبط المواقيت والقبلة بشكل دائم على $city")
+    }
+
+    fun updateAllPrayerWidgets() {
+        try {
+            val app = getApplication<Application>()
+            com.example.widget.LockscreenPrayerWidgetProvider.updateAllWidgets(app)
+            com.example.widget.PrayerTimesAppWidgetProvider.updateAllWidgets(app)
+            com.example.widget.DailyWirdAppWidgetProvider.updateAllWidgets(app)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     /**
@@ -1395,6 +1471,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application), S
         super.onCleared()
         audioPlayer.release()
         timeTickerJob?.cancel()
-        sensorManager?.unregisterListener(this)
+        stopCompassTracking()
     }
 }

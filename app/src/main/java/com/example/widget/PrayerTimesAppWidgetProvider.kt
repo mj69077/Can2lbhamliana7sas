@@ -10,6 +10,7 @@ import android.widget.RemoteViews
 import com.example.MainActivity
 import com.example.R
 import com.example.data.network.PrayerCalculationEngine
+import com.example.notification.PrayerAlarmScheduler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -45,7 +46,13 @@ class PrayerTimesAppWidgetProvider : AppWidgetProvider() {
             val scope = CoroutineScope(Dispatchers.IO)
             scope.launch {
                 try {
-                    val prayerData = PrayerCalculationEngine.calculatePrayerTimes()
+                    val config = PrayerAlarmScheduler.getSavedConfig(context)
+                    val prayerData = PrayerCalculationEngine.calculatePrayerTimes(
+                        latitude = config.latitude,
+                        longitude = config.longitude,
+                        method = config.method,
+                        locationName = config.city
+                    )
 
                     val views = RemoteViews(context.packageName, R.layout.prayer_times_widget).apply {
                         setTextViewText(R.id.tv_prayer_widget_city, "🕌 مواقيت الصلاة (${prayerData.locationName})")

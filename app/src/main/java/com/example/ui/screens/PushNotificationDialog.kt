@@ -195,22 +195,52 @@ fun PushNotificationDialog(
                         )
 
                         // 1. Prayer Notification Button
-                        FilledTonalButton(
+                        Button(
                             onClick = {
-                                PushNotificationHelper.sendPrayerNotification(
+                                PushNotificationHelper.testPrayerAdhan(
                                     context = context,
                                     prayerName = "الظهر",
-                                    prayerTime = "12:15 م",
                                     cityName = currentCity
                                 )
-                                onShowMessage("تم إرسال إشعار الأذان 🕌", "تفقد شريط الإشعارات أعلى الشاشة")
+                                onShowMessage("انطلق صوت الأذان والإشعار 🕌", "تفقد شريط الإشعارات واستمع لصوت الأذان")
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(10.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary
+                            )
+                        ) {
+                            Icon(Icons.Default.VolumeUp, contentDescription = null, modifier = Modifier.size(20.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("تجربة انطلاق صوت الأذان والإشعار فوراً 📢")
+                        }
+
+                        // Stop Adhan Button
+                        OutlinedButton(
+                            onClick = {
+                                com.example.notification.AdhanPlaybackService.stop(context)
+                                onShowMessage("تم إيقاف الأذان", "تم إيقاف تشغيل الصوت")
                             },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(10.dp)
                         ) {
-                            Icon(Icons.Default.Mosque, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Stop, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("إرسال إشعار أذان الصلاة (أولوية قصوى)")
+                            Text("إيقاف صوت الأذان الشغال ⏹️")
+                        }
+
+                        // Reschedule exact alarms button
+                        FilledTonalButton(
+                            onClick = {
+                                com.example.notification.PrayerAlarmScheduler.scheduleNextPrayerAlarms(context)
+                                onShowMessage("تمت الجدولة الدقيقة ⏰", "تم ضبط منبهات الأذان الخمسة والتحصينات بدقة مع النظام")
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(10.dp)
+                        ) {
+                            Icon(Icons.Default.Alarm, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("إعادة جدولة منبهات الصلوات مع النظام (Exact Alarm)")
                         }
 
                         // 2. Morning/Evening Athkar Notification Button

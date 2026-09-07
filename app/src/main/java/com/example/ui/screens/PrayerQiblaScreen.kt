@@ -88,11 +88,21 @@ fun PrayerQiblaScreen(
         }
     }
 
+    DisposableEffect(Unit) {
+        viewModel.startCompassTracking()
+        onDispose {
+            viewModel.stopCompassTracking()
+        }
+    }
+
     LaunchedEffect(Unit) {
-        val hasFine = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-        val hasCoarse = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
-        if (hasFine || hasCoarse) {
-            viewModel.detectDeviceLocation(context)
+        val isSaved = com.example.notification.PrayerAlarmScheduler.isLocationSaved(context)
+        if (!isSaved) {
+            val hasFine = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+            val hasCoarse = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+            if (hasFine || hasCoarse) {
+                viewModel.detectDeviceLocation(context)
+            }
         }
     }
 

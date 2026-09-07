@@ -12,4 +12,14 @@
     <string name="widget_sunnah_description">عرض يومي لسنة نبوية شريفة مع الحديث والأجر والفضل</string>
     <string name="widget_athkar_compact_title">ذكر وتحصين اليوم</string>
     <string name="widget_athkar_compact_description">أذكار مأثورة وأدعية التحصين اليومي من حصن المسلم للشاشة</string>
+
+    <!-- App Shortcuts -->
+    <string name="shortcut_tasbih_short">السبحة</string>
+    <string name="shortcut_tasbih_long">السبحة الإلكترونية</string>
+    <string name="shortcut_prayer_short">المواقيت</string>
+    <string name="shortcut_prayer_long">مواقيت الصلاة والقبلة</string>
+    <string name="shortcut_quran_short">المصحف</string>
+    <string name="shortcut_quran_long">المصحف الشريف والورد</string>
+    <string name="shortcut_athkar_short">الأذكار</string>
+    <string name="shortcut_athkar_long">أذكار حصن المسلم</string>
 </resources>
