@@ -29,10 +29,7 @@ import com.example.data.local.SunnahData
 import com.example.data.local.HisnAlMuslimData
 import com.example.notification.PushNotificationHelper
 import com.example.data.model.*
-import com.example.ui.components.GlassCard
-import com.example.ui.components.IslamicHeader
-import com.example.ui.components.PrayerCountdownCard
-import com.example.ui.components.QuranProgressCard
+import com.example.ui.components.*
 import com.example.ui.theme.*
 import com.example.ui.viewmodel.AppTab
 import com.example.ui.viewmodel.MainViewModel
@@ -48,6 +45,13 @@ fun DailyDashboardScreen(
     val currentCity by viewModel.currentCity.collectAsState()
     val todayHadith by viewModel.todayHadith.collectAsState()
     val todayFatwa by viewModel.todayFatwa.collectAsState()
+
+    val worshipStreaks by viewModel.worshipStreaks.collectAsState()
+    val heatmapRecords by viewModel.heatmapData.collectAsState()
+    val worshipBadges by viewModel.worshipBadges.collectAsState()
+    val seasonMode by viewModel.activeSeason.collectAsState()
+    val faithRadarScores by viewModel.faithRadarScores.collectAsState()
+    val streakPredictionMessage by viewModel.streakPredictionMessage.collectAsState()
 
     var showAddTaskDialog by remember { mutableStateOf(false) }
     var showKhatmahDialog by remember { mutableStateOf(false) }
@@ -71,6 +75,9 @@ fun DailyDashboardScreen(
     var showMoshafLibraryDialog by remember { mutableStateOf(false) }
     var showPushNotificationDialog by remember { mutableStateOf(false) }
     var showWidgetsHubDialog by remember { mutableStateOf(false) }
+    var showBadgesDialog by remember { mutableStateOf(false) }
+    var showWeeklyCardDialog by remember { mutableStateOf(false) }
+    var showPrivacyBackupDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
     val completedCount = tasks.count { it.isCompleted }
@@ -256,6 +263,27 @@ fun DailyDashboardScreen(
         )
     }
 
+    if (showBadgesDialog) {
+        BadgesAndMilestonesDialog(
+            viewModel = viewModel,
+            onDismiss = { showBadgesDialog = false }
+        )
+    }
+
+    if (showWeeklyCardDialog) {
+        ShareableWeeklyCardDialog(
+            viewModel = viewModel,
+            onDismiss = { showWeeklyCardDialog = false }
+        )
+    }
+
+    if (showPrivacyBackupDialog) {
+        PrivacyBackupDialog(
+            viewModel = viewModel,
+            onDismiss = { showPrivacyBackupDialog = false }
+        )
+    }
+
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
@@ -274,6 +302,27 @@ fun DailyDashboardScreen(
                 onOpenStatistics = { showStatisticsDialog = true },
                 onOpenAdhanSettings = { showAdhanSettingsDialog = true }
             )
+        }
+
+        // Seasonal Mode Banner
+        item {
+            SeasonModeBanner(
+                activeSeason = seasonMode,
+                onSelectSeason = { sId -> viewModel.setSeasonMode(sId) },
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
+            )
+        }
+
+        // Streak Predictor & Proactive Alert
+        if (streakPredictionMessage.isNotBlank()) {
+            item {
+                StreakPredictorBanner(
+                    message = streakPredictionMessage,
+                    streakDays = worshipStreaks.maxOfOrNull { it.currentStreak } ?: 0,
+                    onActionClick = { /* User tapped predictor */ },
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                )
+            }
         }
 
         // 2. Next Prayer Countdown Card
@@ -301,6 +350,33 @@ fun DailyDashboardScreen(
                         viewModel.setTab(AppTab.QURAN)
                     },
                     onOpenPlanDialog = { showKhatmahDialog = true }
+                )
+            }
+        }
+
+        // 3.5. Worship Streaks, GitHub-Style Heatmap & Faith Balance Radar
+        item {
+            Spacer(modifier = Modifier.height(14.dp))
+            Column(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                // Streaks & Freeze Card
+                WorshipStreaksCard(
+                    streaks = worshipStreaks,
+                    onToggleFreeze = { streakType, reason ->
+                        viewModel.useStreakFreeze(streakType, reason)
+                    }
+                )
+
+                // Annual / Monthly Heatmap Card
+                GitHubHeatmapCard(
+                    heatmapData = heatmapRecords
+                )
+
+                // Faith Radar 5-Axis Chart
+                FaithBalanceRadarCard(
+                    scores = faithRadarScores
                 )
             }
         }
@@ -905,6 +981,150 @@ fun DailyDashboardScreen(
                         }
 
                         Icon(Icons.Default.ArrowForwardIos, contentDescription = null, tint = IslamicGoldPrimary, modifier = Modifier.size(14.dp))
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Badges & Milestones Card
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(14.dp))
+                        .clickable { showBadgesDialog = true },
+                    color = Color(0xFF07241A),
+                    border = BorderStroke(1.2.dp, Color(0xFFFFB300))
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 14.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(
+                                modifier = Modifier
+                                    .size(38.dp)
+                                    .clip(CircleShape)
+                                    .background(Color(0xFFFFB300)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(Icons.Default.EmojiEvents, contentDescription = null, tint = Color(0xFF07241A), modifier = Modifier.size(22.dp))
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column {
+                                Text(
+                                    text = "🏆 أوسمة ومحطات الإنجاز التعبدي (${worshipBadges.count { it.isUnlocked }}/${worshipBadges.size})",
+                                    color = IslamicGoldLight,
+                                    fontSize = 12.5.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = "أوسمة الفجر • ورد القرآن • صيام النوافل • قيام الليل",
+                                    color = Color(0xFFFFE082),
+                                    fontSize = 10.5.sp
+                                )
+                            }
+                        }
+
+                        Icon(Icons.Default.ArrowForwardIos, contentDescription = null, tint = Color(0xFFFFB300), modifier = Modifier.size(14.dp))
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Weekly Shareable Summary Card
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(14.dp))
+                        .clickable { showWeeklyCardDialog = true },
+                    color = Color(0xFF08271D),
+                    border = BorderStroke(1.2.dp, IslamicGoldPrimary)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 14.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(
+                                modifier = Modifier
+                                    .size(38.dp)
+                                    .clip(CircleShape)
+                                    .background(Color(0xFF134533)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(Icons.Default.CardGiftcard, contentDescription = null, tint = IslamicGoldPrimary, modifier = Modifier.size(22.dp))
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column {
+                                Text(
+                                    text = "📊 بطاقة التقرير الأسبوعي للمشاركة",
+                                    color = IslamicGoldLight,
+                                    fontSize = 12.5.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = "بطاقة مصممة ومختصرة للصلوات والأوراد جاهزة للنشر",
+                                    color = IslamicTextSecondary,
+                                    fontSize = 10.5.sp
+                                )
+                            }
+                        }
+
+                        Icon(Icons.Default.ArrowForwardIos, contentDescription = null, tint = IslamicGoldPrimary, modifier = Modifier.size(14.dp))
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Local Privacy & Backup Card (No external servers)
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(14.dp))
+                        .clickable { showPrivacyBackupDialog = true },
+                    color = Color(0xFF062017),
+                    border = BorderStroke(1.2.dp, Color(0xFF26A69A))
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 14.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(
+                                modifier = Modifier
+                                    .size(38.dp)
+                                    .clip(CircleShape)
+                                    .background(Color(0xFF26A69A)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(Icons.Default.Lock, contentDescription = null, tint = Color(0xFF041811), modifier = Modifier.size(22.dp))
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column {
+                                Text(
+                                    text = "🔒 الخصوصية والنسخ الاحتياطي المحلي (Local-First)",
+                                    color = Color(0xFFE0F2F1),
+                                    fontSize = 12.5.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = "تصدير محلي مشفر بدون سيرفر خارجي • JSON / CSV",
+                                    color = Color(0xFF80CBC4),
+                                    fontSize = 10.5.sp
+                                )
+                            }
+                        }
+
+                        Icon(Icons.Default.ArrowForwardIos, contentDescription = null, tint = Color(0xFF26A69A), modifier = Modifier.size(14.dp))
                     }
                 }
             }

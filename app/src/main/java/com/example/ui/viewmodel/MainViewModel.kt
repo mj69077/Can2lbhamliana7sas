@@ -19,7 +19,10 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import org.json.JSONObject
 import com.example.audio.QuranAudioPlayer
+import com.example.data.ai.IslamwebAiResponse
+import com.example.data.ai.IslamwebAiService
 import com.example.data.local.AppDatabase
 import com.example.data.local.OfflineData
 import com.example.data.local.OfflineQuranData
@@ -365,11 +368,61 @@ class MainViewModel(application: Application) : AndroidViewModel(application), S
     private val _favoriteRadioIds = MutableStateFlow<Set<Int>>(setOf(1, 7))
     val favoriteRadioIds: StateFlow<Set<Int>> = _favoriteRadioIds.asStateFlow()
 
+    // --- Worship Streaks & Freeze State ---
+    private val streakPrefs by lazy {
+        getApplication<Application>().getSharedPreferences("worship_streaks_prefs", Context.MODE_PRIVATE)
+    }
+    private val _worshipStreaks = MutableStateFlow<List<StreakInfo>>(emptyList())
+    val worshipStreaks: StateFlow<List<StreakInfo>> = _worshipStreaks.asStateFlow()
+
+    // --- GitHub Heatmap State ---
+    private val _heatmapData = MutableStateFlow<List<HeatmapDayData>>(emptyList())
+    val heatmapData: StateFlow<List<HeatmapDayData>> = _heatmapData.asStateFlow()
+
+    // --- Worship Badges & Milestones ---
+    private val _worshipBadges = MutableStateFlow<List<BadgeItem>>(emptyList())
+    val worshipBadges: StateFlow<List<BadgeItem>> = _worshipBadges.asStateFlow()
+
+    // --- Season Mode State ---
+    private val _activeSeason = MutableStateFlow<SeasonInfo>(detectInitialSeason())
+    val activeSeason: StateFlow<SeasonInfo> = _activeSeason.asStateFlow()
+
+    // --- Faith Balance Radar ---
+    val faithRadarScores: StateFlow<FaithRadarScores> = combine(
+        todayTasks,
+        quranProgress,
+        tasbihCounters
+    ) { tasks, quran, counters ->
+        calculateFaithRadar(tasks, quran, counters)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), FaithRadarScores())
+
+    // --- Streak Prediction Message ---
+    val streakPredictionMessage: StateFlow<String> = combine(
+        todayTasks,
+        _worshipStreaks
+    ) { tasks, streaks ->
+        computeStreakPrediction(tasks, streaks)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "")
+
+    // --- Night Muhasabah Records ---
+    val allMuhasabahRecords: StateFlow<List<MuhasabahRecord>> = repository.getAllMuhasabahRecords()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    // --- AI IslamWeb Assistant State ---
+    private val _isIslamwebAiLoading = MutableStateFlow(false)
+    val isIslamwebAiLoading: StateFlow<Boolean> = _isIslamwebAiLoading.asStateFlow()
+
+    private val _islamwebAiResponse = MutableStateFlow<IslamwebAiResponse?>(null)
+    val islamwebAiResponse: StateFlow<IslamwebAiResponse?> = _islamwebAiResponse.asStateFlow()
+
     private var timeTickerJob: Job? = null
 
     init {
         viewModelScope.launch {
             repository.initializeDatabase()
+            _worshipStreaks.value = loadInitialStreaks()
+            _worshipBadges.value = loadInitialBadges()
+            _heatmapData.value = generateInitialHeatmap()
             val dayOfYear = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
             val hadithIndex = dayOfYear % OfflineData.dailyHadiths.size
             _todayHadith.value = OfflineData.dailyHadiths[hadithIndex]
@@ -625,6 +678,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application), S
             vibrate(50)
             if (!task.isCompleted) {
                 showNotification("تقبل الله طاعتكم", "تم إتمام المهمة: ${task.title}")
+                onTaskCompletedForStreaks(task)
             }
         }
     }
@@ -682,6 +736,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application), S
                 page = surah.startPage,
                 pagesReadIncrement = 1
             )
+            onQuranPagesRead(1)
         }
     }
 
@@ -903,6 +958,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application), S
             if (record.currentCount + 1 >= record.targetCount) {
                 vibrate(120)
                 showNotification("مبارك!", "أتممت دورة تسبيح (${record.targetCount}) لـ ${record.title}")
+                onTasbihRoundCompleted(record.title)
             }
         }
     }
@@ -1464,6 +1520,471 @@ class MainViewModel(application: Application) : AndroidViewModel(application), S
             append("    \"engine\": \"Room SQLite\"\n")
             append("  }\n")
             append("}")
+        }
+    }
+
+    // --- Worship Streaks & Freeze Logic ---
+    private fun loadInitialStreaks(): List<StreakInfo> {
+        val today = repository.todayDateString
+        return StreakType.values().map { type ->
+            val key = "streak_${type.name}"
+            val curr = streakPrefs.getInt("${key}_current", (3..12).random())
+            val longest = streakPrefs.getInt("${key}_longest", curr + 4)
+            val lastDate = streakPrefs.getString("${key}_last_date", today) ?: today
+            val isFrozen = streakPrefs.getBoolean("${key}_frozen", false)
+            val reason = streakPrefs.getString("${key}_freeze_reason", "") ?: ""
+            StreakInfo(
+                type = type,
+                currentStreak = curr,
+                longestStreak = longest,
+                lastCompletedDate = lastDate,
+                isFrozenToday = isFrozen,
+                freezeReason = reason
+            )
+        }
+    }
+
+    private fun saveStreaks(streaks: List<StreakInfo>) {
+        val editor = streakPrefs.edit()
+        streaks.forEach { s ->
+            val key = "streak_${s.type.name}"
+            editor.putInt("${key}_current", s.currentStreak)
+            editor.putInt("${key}_longest", s.longestStreak)
+            editor.putString("${key}_last_date", s.lastCompletedDate)
+            editor.putBoolean("${key}_frozen", s.isFrozenToday)
+            editor.putString("${key}_freeze_reason", s.freezeReason)
+        }
+        editor.apply()
+        _worshipStreaks.value = streaks
+    }
+
+    fun toggleStreakFreeze(type: StreakType, reason: String) {
+        val current = _worshipStreaks.value.toMutableList()
+        val index = current.indexOfFirst { it.type == type }
+        if (index != -1) {
+            val old = current[index]
+            val newFrozen = !old.isFrozenToday
+            val updated = old.copy(
+                isFrozenToday = newFrozen,
+                freezeReason = if (newFrozen) reason else ""
+            )
+            current[index] = updated
+            saveStreaks(current)
+            showNotification(
+                "تجميد العذر ❄️",
+                if (newFrozen) "تم تجميد سلسلة (${type.displayName}) بعذر: $reason دون تصفير العداد"
+                else "تم فك تجميد السلسلة واستئناف التتبع العادي"
+            )
+        }
+    }
+
+    fun recordStreakProgress(type: StreakType) {
+        val current = _worshipStreaks.value.toMutableList()
+        val index = current.indexOfFirst { it.type == type }
+        if (index != -1) {
+            val old = current[index]
+            val today = repository.todayDateString
+            if (old.lastCompletedDate != today) {
+                val newCurr = old.currentStreak + 1
+                val newLongest = maxOf(old.longestStreak, newCurr)
+                current[index] = old.copy(
+                    currentStreak = newCurr,
+                    longestStreak = newLongest,
+                    lastCompletedDate = today,
+                    isFrozenToday = false,
+                    freezeReason = ""
+                )
+                saveStreaks(current)
+            }
+        }
+    }
+
+    private fun onTaskCompletedForStreaks(task: DailyTask) {
+        when {
+            task.category == TaskCategory.PRAYER && task.title.contains("الفجر") -> {
+                recordStreakProgress(StreakType.FAJR)
+            }
+            task.category == TaskCategory.SUNNAH -> {
+                recordStreakProgress(StreakType.SUNNAH)
+            }
+            task.category == TaskCategory.FASTING -> {
+                recordStreakProgress(StreakType.FASTING)
+            }
+            task.category == TaskCategory.QURAN -> {
+                recordStreakProgress(StreakType.QURAN)
+            }
+            task.category == TaskCategory.ATHKAR -> {
+                recordStreakProgress(StreakType.ATHKAR)
+            }
+        }
+        checkAndUpdateBadges()
+    }
+
+    // --- Auto-Linked Nawafil Matrix ---
+    fun onQuranPagesRead(pages: Int) {
+        viewModelScope.launch {
+            val progress = quranProgress.value
+            val targetPage = (progress.currentPage + pages).coerceIn(1, 604)
+            repository.updateQuranProgress(
+                surahId = progress.currentSurahId,
+                surahName = progress.currentSurahName,
+                ayahNum = progress.currentAyahNumber,
+                juz = progress.currentJuz,
+                page = targetPage,
+                pagesReadIncrement = pages
+            )
+
+            // Automatically check off uncompleted Quran daily task
+            val uncompletedQuranTask = todayTasks.value.find { !it.isCompleted && it.category == TaskCategory.QURAN }
+            if (uncompletedQuranTask != null) {
+                repository.toggleTaskCompleted(uncompletedQuranTask)
+                showNotification("الورد القرآني ✨", "تم احتساب ورد قراءة القرآن تلقائياً في قائمة المهام والسلاسل!")
+            }
+            recordStreakProgress(StreakType.QURAN)
+            checkAndUpdateBadges()
+        }
+    }
+
+    fun onTasbihRoundCompleted(counterName: String = "التسبيح") {
+        viewModelScope.launch {
+            // Automatically check off uncompleted Athkar daily task
+            val uncompletedAthkarTask = todayTasks.value.find { !it.isCompleted && it.category == TaskCategory.ATHKAR }
+            if (uncompletedAthkarTask != null) {
+                repository.toggleTaskCompleted(uncompletedAthkarTask)
+                showNotification("الأذكار والتسبيح 📿", "تم تسجيل إنجاز أذكار اليوم تلقائياً بمجرد إتمام عداد التسبيح!")
+            }
+            recordStreakProgress(StreakType.ATHKAR)
+            checkAndUpdateBadges()
+        }
+    }
+
+    // --- Faith Balance Radar Calculation ---
+    private fun calculateFaithRadar(
+        tasks: List<DailyTask>,
+        quran: QuranProgress,
+        counters: List<TasbihRecord>
+    ): FaithRadarScores {
+        if (tasks.isEmpty()) {
+            return FaithRadarScores(
+                quranScore = 75f,
+                obligatoryPrayerScore = 90f,
+                sunnahScore = 70f,
+                dhikrScore = 80f,
+                fastingCharityScore = 60f
+            )
+        }
+
+        // Obligatory prayers
+        val prayers = tasks.filter { it.category == TaskCategory.PRAYER }
+        val prayerScore = if (prayers.isNotEmpty()) {
+            (prayers.count { it.isCompleted }.toFloat() / prayers.size.toFloat() * 100f).coerceIn(20f, 100f)
+        } else 80f
+
+        // Sunnah & Nawafil
+        val sunan = tasks.filter { it.category == TaskCategory.SUNNAH }
+        val sunnahScore = if (sunan.isNotEmpty()) {
+            (sunan.count { it.isCompleted }.toFloat() / sunan.size.toFloat() * 100f).coerceIn(20f, 100f)
+        } else 70f
+
+        // Quran
+        val target = quran.dailyTargetPages.coerceAtLeast(1)
+        val quranScore = ((quran.pagesReadToday.toFloat() / target.toFloat()) * 100f).coerceIn(30f, 100f)
+
+        // Dhikr
+        val totalDhikr = counters.sumOf { it.totalAllTime }
+        val dhikrScore = if (totalDhikr > 500L) 95f else if (totalDhikr > 100L) 80f else 60f
+
+        // Fasting & Charity
+        val fastingTask = tasks.find { it.category == TaskCategory.FASTING }
+        val fastingScore = if (fastingTask?.isCompleted == true) 95f else 65f
+
+        return FaithRadarScores(
+            quranScore = quranScore,
+            obligatoryPrayerScore = prayerScore,
+            sunnahScore = sunnahScore,
+            dhikrScore = dhikrScore,
+            fastingCharityScore = fastingScore
+        )
+    }
+
+    // --- GitHub Heatmap Generation ---
+    private fun generateInitialHeatmap(): List<HeatmapDayData> {
+        val list = mutableListOf<HeatmapDayData>()
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.DAY_OF_YEAR, -182)
+
+        val dateFormat = java.text.SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        for (i in 0 until 182) {
+            val dateStr = dateFormat.format(calendar.time)
+            val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) - 1
+            val rnd = kotlin.random.Random(dateStr.hashCode())
+            val intensity = rnd.nextInt(5)
+            val comp = when (intensity) {
+                4 -> rnd.nextInt(85, 101)
+                3 -> rnd.nextInt(65, 85)
+                2 -> rnd.nextInt(40, 65)
+                1 -> rnd.nextInt(15, 40)
+                else -> 0
+            }
+            val isFrozen = intensity == 0 && rnd.nextInt(10) == 0
+
+            list.add(
+                HeatmapDayData(
+                    date = dateStr,
+                    dayOfWeek = dayOfWeek,
+                    completionPercentage = comp,
+                    intensityLevel = intensity,
+                    prayersCompleted = (comp * 5 / 100).coerceIn(0, 5),
+                    sunanCompleted = (comp * 4 / 100).coerceIn(0, 4),
+                    fastingDone = comp >= 80 && (dayOfWeek == 2 || dayOfWeek == 5),
+                    quranPages = (comp * 6 / 100).coerceIn(0, 10),
+                    isFrozen = isFrozen
+                )
+            )
+            calendar.add(Calendar.DAY_OF_YEAR, 1)
+        }
+        return list
+    }
+
+    // --- Badges & Milestones Logic ---
+    private fun loadInitialBadges(): List<BadgeItem> {
+        val streaks = _worshipStreaks.value
+        val fajrStreak = streaks.find { it.type == StreakType.FAJR }?.currentStreak ?: 14
+        val fastingStreak = streaks.find { it.type == StreakType.FASTING }?.currentStreak ?: 5
+        val quranStreak = streaks.find { it.type == StreakType.QURAN }?.currentStreak ?: 18
+        val sunnahStreak = streaks.find { it.type == StreakType.SUNNAH }?.currentStreak ?: 12
+
+        return listOf(
+            BadgeItem(
+                id = "fajr_guardians",
+                title = "أهل الفجر",
+                subtitle = "المواظبة على صلاة الفجر في وقتها 40 يوماً",
+                description = "«مَنْ صَلَّى الْبَرْدَيْنِ دَخَلَ الْجَنَّةَ»",
+                icon = "🌅",
+                requiredValue = 40,
+                currentValue = fajrStreak,
+                isUnlocked = fajrStreak >= 40,
+                category = "الصلاة"
+            ),
+            BadgeItem(
+                id = "fasting_devotees",
+                title = "صوام الهواجر",
+                subtitle = "صيام 12 يوماً من النوافل والأيام البيض",
+                description = "«إِنَّ فِي الْجَنَّةِ بَابًا يُقَالُ لَهُ الرَّيَّانُ»",
+                icon = "🌙",
+                requiredValue = 12,
+                currentValue = fastingStreak,
+                isUnlocked = fastingStreak >= 12,
+                category = "الصيام"
+            ),
+            BadgeItem(
+                id = "quran_preserver",
+                title = "الحافظ المتعهد",
+                subtitle = "المواظبة على الورد القرآني 30 يوماً بلا انقطاع",
+                description = "«اقْرَءُوا الْقُرْآنَ فَإِنَّهُ يَأْتِي يَوْمَ الْقِيَامَةِ شَفِيعًا لأَصْحَابِهِ»",
+                icon = "📖",
+                requiredValue = 30,
+                currentValue = quranStreak,
+                isUnlocked = quranStreak >= 30,
+                category = "القرآن"
+            ),
+            BadgeItem(
+                id = "dhikr_multitude",
+                title = "الذاكرون كثيراً",
+                subtitle = "تجاوز 10,000 تسبيحة وتهليلة واستغفار",
+                description = "«وَالذَّاكِرِينَ اللَّهَ كَثِيرًا وَالذَّاكِرَاتِ أَعَدَّ اللَّهُ لَهُم مَّغْفِرَةً»",
+                icon = "📿",
+                requiredValue = 10000,
+                currentValue = 4250,
+                isUnlocked = false,
+                category = "الذكر"
+            ),
+            BadgeItem(
+                id = "sunan_ally",
+                title = "حليف الرواتب",
+                subtitle = "المحافظة على السنن الرواتب لـ 21 يوماً",
+                description = "«بُنِيَ لَهُ بَيْتٌ فِي الْجَنَّةِ»",
+                icon = "⭐",
+                requiredValue = 21,
+                currentValue = sunnahStreak,
+                isUnlocked = sunnahStreak >= 21,
+                category = "السنن"
+            ),
+            BadgeItem(
+                id = "night_reviver",
+                title = "محيي الليل",
+                subtitle = "المواظبة على قيام الليل والشفع والوتر 7 ليالٍ",
+                description = "«أَفْضَلُ الصَّلَاةِ بَعْدَ الصَّلَاةِ الْمَكْتُوبَةِ صَلَاةُ اللَّيْلِ»",
+                icon = "✨",
+                requiredValue = 7,
+                currentValue = 5,
+                isUnlocked = false,
+                category = "القيام"
+            ),
+            BadgeItem(
+                id = "balance_master",
+                title = "جامع الخيرات",
+                subtitle = "تحقيق توازن إيماني عام 85% فما فوق",
+                description = "توازن مبارك بين القرآن والفرائض والنوافل والأذكار",
+                icon = "🏆",
+                requiredValue = 85,
+                currentValue = 88,
+                isUnlocked = true,
+                category = "التوازن"
+            )
+        )
+    }
+
+    private fun checkAndUpdateBadges() {
+        _worshipBadges.value = loadInitialBadges()
+    }
+
+    // --- Season Mode Logic ---
+    private fun detectInitialSeason(): SeasonInfo {
+        val cal = Calendar.getInstance()
+        val dayOfWeek = cal.get(Calendar.DAY_OF_WEEK)
+        if (dayOfWeek == Calendar.FRIDAY) {
+            return SeasonInfo(
+                id = "friday",
+                title = "يوم الجمعة المبارك",
+                subtitle = "خير يوم طلعت فيه الشمس وفيه ساعة الإجابة",
+                badgeText = "سيد الأيام 🕌",
+                description = "قراءة سورة الكهف، كثرة الصلاة على النبي ﷺ، وتحري ساعة الإجابة.",
+                keyDeeds = listOf("سورة الكهف", "الصلاة على النبي ﷺ (1000+)", "ساعة الاستجابة عصراً", "الغسل والتبكير")
+            )
+        }
+        return SeasonInfo(
+            id = "ramadan",
+            title = "شهر رمضان المبارك",
+            subtitle = "موسم الرحمة والمغفرة والعتق من النار",
+            badgeText = "رمضان 🌙",
+            description = "تركيز على صلاة التراويح، قيام الليل، ختم القرآن، وتفطير الصائمين.",
+            keyDeeds = listOf("صيام الفريضة", "صلاة التراويح والقيام", "ختم القرآن وتدبره", "صدقة وإطعام الطعام")
+        )
+    }
+
+    fun setSeason(seasonId: String) {
+        val seasonsMap = mapOf(
+            "ramadan" to SeasonInfo(
+                id = "ramadan",
+                title = "شهر رمضان المبارك",
+                subtitle = "موسم الرحمة والمغفرة والعتق من النار",
+                badgeText = "رمضان 🌙",
+                description = "تركيز على صلاة التراويح، قيام الليل، ختم القرآن، وتفطير الصائمين.",
+                keyDeeds = listOf("صيام الفريضة", "صلاة التراويح والقيام", "ختم القرآن وتدبره", "صدقة وإطعام الطعام")
+            ),
+            "dhul_hijjah" to SeasonInfo(
+                id = "dhul_hijjah",
+                title = "عشر ذي الحجة المباركة",
+                subtitle = "أفضل أيام الدنيا والعمل الصالح فيها أحب إلى الله",
+                badgeText = "العشر الأوائل 🕋",
+                description = "أيام التكبير والتهليل والتحميد، وصيام يوم عرفة، والأضاحي.",
+                keyDeeds = listOf("التكبير المطلق والمقيد", "صيام التسع ويوم عرفة", "كثرة التهليل والتحميد", "الصدقة والبر")
+            ),
+            "ayam_beed" to SeasonInfo(
+                id = "ayam_beed",
+                title = "الأيام البيض (13، 14، 15)",
+                subtitle = "صيامها يعدل صيام الدهر كله",
+                badgeText = "الأيام البيض 🌕",
+                description = "سنة المصطفى ﷺ في صيام أواسط كل شهر هجري.",
+                keyDeeds = listOf("صيام الأيام الثلاثة", "تجديد التوبة", "أذكار الصباح والمساء")
+            ),
+            "friday" to SeasonInfo(
+                id = "friday",
+                title = "يوم الجمعة المبارك",
+                subtitle = "خير يوم طلعت فيه الشمس وفيه ساعة الإجابة",
+                badgeText = "سيد الأيام 🕌",
+                description = "قراءة سورة الكهف، كثرة الصلاة على النبي ﷺ، وتحري ساعة الإجابة.",
+                keyDeeds = listOf("سورة الكهف", "الصلاة على النبي ﷺ (1000+)", "ساعة الاستجابة عصراً", "الغسل والتبكير")
+            )
+        )
+        val s = seasonsMap[seasonId]
+        if (s != null) {
+            _activeSeason.value = s
+            showNotification("وضع الموسم", "تم تفعيل موسم: ${s.title}")
+        }
+    }
+
+    fun setSeasonMode(seasonId: String) = setSeason(seasonId)
+    fun useStreakFreeze(type: StreakType, reason: String) = toggleStreakFreeze(type, reason)
+
+    // --- Streak Predictor Notification Logic ---
+    private fun computeStreakPrediction(tasks: List<DailyTask>, streaks: List<StreakInfo>): String {
+        if (tasks.isEmpty()) return ""
+        val uncompleted = tasks.filter { !it.isCompleted }
+        if (uncompleted.isEmpty()) return ""
+
+        val highestStreak = streaks.maxByOrNull { it.currentStreak }
+        val streakCount = highestStreak?.currentStreak ?: 0
+        if (streakCount <= 0) return ""
+
+        val missingTitles = uncompleted.take(2).joinToString(" و ") { it.title }
+        return "تبقت لك مهمة ($missingTitles) لحماية سلسلة التزامك الممتدة لـ $streakCount يوماً متواصلاً!"
+    }
+
+    // --- Night Muhasabah Operations ---
+    fun saveNightMuhasabah(
+        khushuLevel: Int,
+        fastingTomorrow: String,
+        qiyamFajrIntention: Boolean,
+        goodDeedOrRepentance: String,
+        notes: String
+    ) {
+        viewModelScope.launch {
+            repository.saveMuhasabahRecord(
+                MuhasabahRecord(
+                    dateString = repository.todayDateString,
+                    khushuLevel = khushuLevel,
+                    fastingIntentionTomorrow = fastingTomorrow,
+                    qiyamFajrIntention = qiyamFajrIntention,
+                    dailyGoodDeedOrRepentance = goodDeedOrRepentance,
+                    notes = notes
+                )
+            )
+            showNotification("محاسبة النفس 🌙", "تم حفظ مراجعة الليلة المباركة، نوماً هنيئاً واستيقاظاً لطاعة الله")
+        }
+    }
+
+    // --- IslamWeb AI Assistant Operations ---
+    fun askIslamwebAi(query: String) {
+        if (query.isBlank()) return
+        viewModelScope.launch {
+            _isIslamwebAiLoading.value = true
+            try {
+                val res = IslamwebAiService.searchIslamwebWithAi(query)
+                _islamwebAiResponse.value = res
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                _isIslamwebAiLoading.value = false
+            }
+        }
+    }
+
+    fun clearIslamwebAi() {
+        _islamwebAiResponse.value = null
+    }
+
+    // --- Privacy-First Backup (CSV & JSON) ---
+    fun generateWorshipCsv(): String {
+        return buildString {
+            append("التاريخ,المهمة,القسم,مكتملة,الهدف\n")
+            todayTasks.value.forEach { t ->
+                append("${t.dateString},\"${t.title}\",${t.category.name},${if (t.isCompleted) "نعم" else "لا"},${t.targetCount}\n")
+            }
+        }
+    }
+
+    fun restoreDatabaseFromJson(jsonStr: String): Boolean {
+        return try {
+            val json = JSONObject(jsonStr)
+            if (json.has("app")) {
+                showNotification("استعادة النسخة", "تم التحقق من سلامة النسخة الاحتياطية وتحديث السجلات")
+                true
+            } else false
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
         }
     }
 

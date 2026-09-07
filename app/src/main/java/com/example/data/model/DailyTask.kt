@@ -8,6 +8,7 @@ enum class TaskCategory(val displayName: String, val iconName: String) {
     PRAYER("الصلاة المفروضة", "Mosque"),
     SUNNAH("السنن والنوافل", "Star"),
     ATHKAR("الأذكار اليومية", "SelfImprovement"),
+    FASTING("صيام النوافل والفرض", "NightsStay"),
     DUA("الأدعية والاستغفار", "VolunteerActivism"),
     CHARITY("الصدقة والعمل الصالح", "Favorite")
 }

@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.example.data.ai.IslamwebAiResponse
 import com.example.data.network.IslamwebFatwa
 import com.example.ui.screens.RulingBadge
 import com.example.ui.theme.*
@@ -50,6 +51,10 @@ fun IslamwebFatwaDialog(
     val islamwebFatwas by viewModel.islamwebFatwas.collectAsState()
     val fetchedDetail by viewModel.fetchedIslamwebDetail.collectAsState()
     val errorMessage by viewModel.islamwebErrorMessage.collectAsState()
+
+    var activeSubTab by remember { mutableStateOf(0) }
+    val aiResponse by viewModel.islamwebAiResponse.collectAsState()
+    val isAiLoading by viewModel.isIslamwebAiLoading.collectAsState()
 
     var searchTextInput by remember { mutableStateOf("") }
     var selectedCategoryFilter by remember { mutableStateOf("الكل") }
@@ -166,16 +171,92 @@ fun IslamwebFatwaDialog(
                         onShare = { shareIslamwebFatwa(context, detail) }
                     )
                 } else {
-                    // Search & Browse View
-                    val filteredList = remember(islamwebFatwas, selectedCategoryFilter) {
-                        if (selectedCategoryFilter == "الكل") islamwebFatwas
-                        else islamwebFatwas.filter { it.categoryName.contains(selectedCategoryFilter) }
+                    // Sub-Tab Switcher: AI Search vs Archive
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color(0xFF07241A))
+                            .padding(4.dp)
+                    ) {
+                        Surface(
+                            shape = RoundedCornerShape(10.dp),
+                            color = if (activeSubTab == 0) IslamicGoldPrimary else Color.Transparent,
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable { activeSubTab = 0 }
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(vertical = 8.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    Icons.Default.AutoAwesome,
+                                    contentDescription = null,
+                                    tint = if (activeSubTab == 0) IslamicEmeraldDark else IslamicGoldLight,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    "باحث AI (إسلام ويب حصراً)",
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (activeSubTab == 0) IslamicEmeraldDark else Color.White,
+                                    fontSize = 11.5.sp
+                                )
+                            }
+                        }
+
+                        Surface(
+                            shape = RoundedCornerShape(10.dp),
+                            color = if (activeSubTab == 1) IslamicGoldPrimary else Color.Transparent,
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable { activeSubTab = 1 }
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(vertical = 8.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    Icons.Default.ManageSearch,
+                                    contentDescription = null,
+                                    tint = if (activeSubTab == 1) IslamicEmeraldDark else IslamicGoldLight,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    "تصفح الفتاوى والأرشيف",
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (activeSubTab == 1) IslamicEmeraldDark else Color.White,
+                                    fontSize = 11.5.sp
+                                )
+                            }
+                        }
                     }
 
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    if (activeSubTab == 0) {
+                        IslamwebAiAssistantView(
+                            viewModel = viewModel,
+                            aiResponse = aiResponse,
+                            isLoading = isAiLoading,
+                            onAskQuestion = { q -> viewModel.askIslamwebAi(q) },
+                            onClear = { viewModel.clearIslamwebAi() }
+                        )
+                    } else {
+                        // Search & Browse View
+                        val filteredList = remember(islamwebFatwas, selectedCategoryFilter) {
+                            if (selectedCategoryFilter == "الكل") islamwebFatwas
+                            else islamwebFatwas.filter { it.categoryName.contains(selectedCategoryFilter) }
+                        }
+
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
                         // 1. Text Search Box (Hero Search by Writing)
                         item {
                             Surface(
@@ -402,6 +483,7 @@ fun IslamwebFatwaDialog(
             }
         }
     }
+}
 }
 
 @Composable
@@ -765,4 +847,358 @@ private fun shareIslamwebFatwa(context: Context, fatwa: IslamwebFatwa) {
         putExtra(Intent.EXTRA_TEXT, shareText)
     }
     context.startActivity(Intent.createChooser(intent, "مشاركة فتوى إسلام ويب"))
+}
+
+@Composable
+fun IslamwebAiAssistantView(
+    viewModel: MainViewModel,
+    aiResponse: IslamwebAiResponse?,
+    isLoading: Boolean,
+    onAskQuestion: (String) -> Unit,
+    onClear: () -> Unit
+) {
+    var questionText by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    val quickQuestions = listOf(
+        "بخاخ الربو للمريض في رمضان",
+        "حكم المسح على الجوارب وشروطه",
+        "سجود السهو مواضعه وصفته",
+        "زكاة الذهب الملبوس للمرأة",
+        "حكم تداول العملات المشفرة",
+        "الجمع بين الصلاتين لعذر المطر",
+        "صلاة الوتر وعدد ركعاتها",
+        "حكم قراءة القرآن من الهاتف للحائض"
+    )
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(14.dp)
+    ) {
+        // 1. Islamweb Exclusivity Guarantee Banner
+        item {
+            Surface(
+                shape = RoundedCornerShape(14.dp),
+                color = Color(0xFF062218),
+                border = BorderStroke(1.dp, IslamicGoldPrimary.copy(alpha = 0.5f))
+            ) {
+                Row(
+                    modifier = Modifier.padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = IslamicGoldPrimary.copy(alpha = 0.15f),
+                        modifier = Modifier.size(38.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(Icons.Default.Verified, contentDescription = null, tint = IslamicGoldPrimary, modifier = Modifier.size(20.dp))
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column {
+                        Text(
+                            text = "باحث الذكاء الاصطناعي الشرعي (إسلام ويب)",
+                            fontSize = 12.5.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = IslamicGoldLight
+                        )
+                        Text(
+                            text = "تم ضبط هذا المساعد للإجابة حصراً واستخراج الأحكام والأدلة من فتاوى موقع إسلام ويب (islamweb.net) مع ذكر رقم الفتوى وتوثيقها.",
+                            fontSize = 11.sp,
+                            color = IslamicTextSecondary,
+                            lineHeight = 16.sp
+                        )
+                    }
+                }
+            }
+        }
+
+        // 2. Query Input Box
+        item {
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = Color(0xFF0A2B20),
+                border = BorderStroke(1.dp, IslamicGoldPrimary)
+            ) {
+                Column(modifier = Modifier.padding(14.dp)) {
+                    Text(
+                        text = "اطرح مسألتك أو سؤالك الفقهي:",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = IslamicGoldLight
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = questionText,
+                        onValueChange = { questionText = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = {
+                            Text(
+                                "مثال: ما حكم صلاة الجنازة عن بعد؟ أو بخاخ الربو في نهار رمضان؟",
+                                color = IslamicTextSecondary.copy(alpha = 0.6f),
+                                fontSize = 12.sp
+                            )
+                        },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = IslamicGoldPrimary,
+                            unfocusedBorderColor = Color(0xFF1B5542),
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            cursorColor = IslamicGoldPrimary
+                        ),
+                        shape = RoundedCornerShape(12.dp),
+                        trailingIcon = {
+                            if (questionText.isNotBlank()) {
+                                IconButton(onClick = { questionText = "" }) {
+                                    Icon(Icons.Default.Clear, contentDescription = "مسح", tint = IslamicGoldLight)
+                                }
+                            }
+                        },
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                        keyboardActions = KeyboardActions(onSearch = {
+                            if (questionText.isNotBlank() && !isLoading) {
+                                keyboardController?.hide()
+                                onAskQuestion(questionText)
+                            }
+                        })
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Button(
+                        onClick = {
+                            if (questionText.isNotBlank() && !isLoading) {
+                                keyboardController?.hide()
+                                onAskQuestion(questionText)
+                            }
+                        },
+                        enabled = questionText.isNotBlank() && !isLoading,
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = IslamicGoldPrimary,
+                            contentColor = IslamicEmeraldDark,
+                            disabledContainerColor = Color(0xFF1B5542),
+                            disabledContentColor = Color.Gray
+                        )
+                    ) {
+                        if (isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(18.dp),
+                                color = IslamicEmeraldDark,
+                                strokeWidth = 2.dp
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("جاري البحث في إسلام ويب...", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        } else {
+                            Icon(Icons.Default.AutoAwesome, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("بحث في فتاوى إسلام ويب بالذكاء الاصطناعي", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+            }
+        }
+
+        // 3. Quick Suggestions
+        item {
+            Column {
+                Text(
+                    text = "أسئلة شائعة في إسلام ويب للتجربة السريعة:",
+                    fontSize = 11.5.sp,
+                    color = IslamicTextSecondary
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    items(quickQuestions) { q ->
+                        SuggestionChip(
+                            onClick = {
+                                questionText = q
+                                onAskQuestion(q)
+                            },
+                            label = { Text(q, fontSize = 11.sp, color = IslamicGoldLight) },
+                            colors = SuggestionChipDefaults.suggestionChipColors(
+                                containerColor = Color(0xFF09291E)
+                            ),
+                            border = BorderStroke(1.dp, Color(0xFF1B5542))
+                        )
+                    }
+                }
+            }
+        }
+
+        // 4. Loading indicator or Result Card
+        if (isLoading) {
+            item {
+                Surface(
+                    shape = RoundedCornerShape(14.dp),
+                    color = Color(0xFF07241A),
+                    border = BorderStroke(1.dp, Color(0xFF1B5542)),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier.padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(32.dp),
+                            color = IslamicGoldPrimary,
+                            strokeWidth = 3.dp
+                        )
+                        Spacer(modifier = Modifier.height(14.dp))
+                        Text(
+                            text = "جاري تصفح واسترجاع الفتوى المعتمدة من موقع إسلام ويب...",
+                            fontSize = 12.sp,
+                            color = IslamicGoldLight,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
+        } else if (aiResponse != null) {
+            val resp = aiResponse
+            item {
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    color = Color(0xFF062218),
+                    border = BorderStroke(1.dp, IslamicGoldPrimary)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Surface(
+                                shape = RoundedCornerShape(6.dp),
+                                color = Color(0xFF114232)
+                            ) {
+                                Text(
+                                    text = if (resp.fatwaNumber.isNotBlank()) "فتوى رقم #${resp.fatwaNumber}" else "فتوى معتمدة - إسلام ويب",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = IslamicGoldPrimary,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                                )
+                            }
+
+                            Row {
+                                IconButton(onClick = {
+                                    val clip = ClipData.newPlainText("Fatwa", "السؤال: ${resp.question}\n\nالجواب من إسلام ويب:\n${resp.answer}\n\nالمصدر: ${resp.sourceUrl}")
+                                    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+                                    clipboard?.setPrimaryClip(clip)
+                                    viewModel.showNotification("تم النسخ", "تم نسخ الفتوى إلى الحافظة")
+                                }) {
+                                    Icon(Icons.Default.ContentCopy, contentDescription = "نسخ", tint = IslamicGoldPrimary, modifier = Modifier.size(20.dp))
+                                }
+
+                                IconButton(onClick = {
+                                    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                                        type = "text/plain"
+                                        putExtra(Intent.EXTRA_SUBJECT, resp.title)
+                                        putExtra(Intent.EXTRA_TEXT, "فتوى من إسلام ويب:\n${resp.title}\n\n${resp.answer}\n\nرابط الفتوى: ${resp.sourceUrl}")
+                                    }
+                                    context.startActivity(Intent.createChooser(shareIntent, "مشاركة الفتوى"))
+                                }) {
+                                    Icon(Icons.Default.Share, contentDescription = "مشاركة", tint = IslamicGoldPrimary, modifier = Modifier.size(20.dp))
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Text(
+                            text = resp.title,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = IslamicGoldLight
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Surface(
+                            shape = RoundedCornerShape(10.dp),
+                            color = Color(0xFF0B2D21),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column(modifier = Modifier.padding(10.dp)) {
+                                Text(
+                                    text = "السؤال المطروح:",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = IslamicTextSecondary
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = resp.question,
+                                    fontSize = 12.sp,
+                                    color = Color.White
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        Text(
+                            text = "خلاصة الحكم والجواب الشرعي:",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = IslamicGoldPrimary
+                        )
+
+                        Spacer(modifier = Modifier.height(6.dp))
+
+                        Text(
+                            text = resp.answer,
+                            fontSize = 13.sp,
+                            color = Color.White,
+                            lineHeight = 22.sp
+                        )
+
+                        if (resp.evidence.isNotBlank()) {
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text(
+                                text = "الأدلة والتعليل الفقهي:",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = IslamicGoldPrimary
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = resp.evidence,
+                                fontSize = 12.sp,
+                                color = IslamicGoldLight,
+                                lineHeight = 19.sp
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        Button(
+                            onClick = {
+                                val url = resp.sourceUrl.ifBlank { "https://www.islamweb.net/ar/fatawa/" }
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                context.startActivity(intent)
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(10.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFF104031),
+                                contentColor = IslamicGoldPrimary
+                            )
+                        ) {
+                            Icon(Icons.Default.OpenInBrowser, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text("فتح صفحة الفتوى الأصلية على موقع إسلام ويب", fontSize = 11.5.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

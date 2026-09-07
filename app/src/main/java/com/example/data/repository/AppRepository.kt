@@ -29,6 +29,7 @@ class AppRepository(
     private val islamicNoteDao = database.islamicNoteDao()
     private val quizScoreDao = database.quizScoreDao()
     private val hadithFavoriteDao = database.hadithFavoriteDao()
+    private val muhasabahDao = database.muhasabahDao()
 
     val todayDateString: String
         get() = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
@@ -362,6 +363,11 @@ class AppRepository(
     fun isHadithFavorite(hadithId: Long): Flow<Boolean> = hadithFavoriteDao.isFavorite(hadithId)
     suspend fun saveFavoriteHadith(favorite: HadithFavorite): Long = withContext(Dispatchers.IO) { hadithFavoriteDao.insertFavorite(favorite) }
     suspend fun deleteFavoriteHadith(hadithId: Long) = withContext(Dispatchers.IO) { hadithFavoriteDao.deleteByHadithId(hadithId) }
+
+    // --- Muhasabah (Night Reflection) Operations ---
+    fun getAllMuhasabahRecords(): Flow<List<MuhasabahRecord>> = muhasabahDao.getAllRecords()
+    suspend fun saveMuhasabahRecord(record: MuhasabahRecord): Long = withContext(Dispatchers.IO) { muhasabahDao.insertRecord(record) }
+    suspend fun deleteMuhasabahRecord(id: Long) = withContext(Dispatchers.IO) { muhasabahDao.deleteRecord(id) }
 
     // --- Database Management & Statistics ---
     suspend fun getFullDatabaseStats(): Map<String, Int> = withContext(Dispatchers.IO) {
