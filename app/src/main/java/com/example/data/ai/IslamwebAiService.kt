@@ -11,7 +11,10 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
+import java.net.HttpURLConnection
 import java.net.InetAddress
+import java.net.URL
+import java.net.URLEncoder
 import java.net.UnknownHostException
 import java.util.concurrent.TimeUnit
 
@@ -35,30 +38,60 @@ data class IslamwebAiResponse(
  */
 private class SmartGoogleDns : Dns {
     private val googleAnycastIps = listOf(
-        "172.217.116.4",
         "172.217.112.4",
-        "172.217.115.4",
         "172.217.113.4",
-        "172.217.117.4",
         "172.217.114.4",
+        "172.217.115.4",
+        "172.217.116.4",
+        "172.217.117.4",
         "172.217.118.4",
-        "172.217.119.4",
-        "142.250.180.202",
-        "142.250.74.202",
-        "142.250.187.202",
-        "216.58.214.202",
-        "172.217.16.202"
+        "172.217.119.4"
     )
 
     override fun lookup(hostname: String): List<InetAddress> {
+        // 1. Try standard system DNS first
         try {
             val addresses = Dns.SYSTEM.lookup(hostname)
             if (addresses.isNotEmpty()) return addresses
         } catch (e: Exception) {
-            Log.w("IslamwebAi", "System DNS failed for $hostname, using fallback: ${e.message}")
+            Log.w("IslamwebAi", "System DNS lookup failed for $hostname: ${e.message}")
         }
 
+        // 2. Try DNS over HTTPS (DoH) via dns.google (8.8.8.8)
         if (hostname.contains("googleapis.com") || hostname.contains("google.com")) {
+            try {
+                val dohUrl = "https://dns.google/resolve?name=${URLEncoder.encode(hostname, "UTF-8")}&type=A"
+                val connection = (URL(dohUrl).openConnection() as HttpURLConnection).apply {
+                    connectTimeout = 3000
+                    readTimeout = 3000
+                    requestMethod = "GET"
+                    setRequestProperty("Accept", "application/json")
+                }
+                if (connection.responseCode == 200) {
+                    val responseText = connection.inputStream.bufferedReader().use { it.readText() }
+                    val json = JSONObject(responseText)
+                    val answers = json.optJSONArray("Answer")
+                    if (answers != null && answers.length() > 0) {
+                        val ips = mutableListOf<InetAddress>()
+                        for (i in 0 until answers.length()) {
+                            val item = answers.getJSONObject(i)
+                            if (item.optInt("type") == 1) { // Type A
+                                val ipStr = item.optString("data")
+                                if (ipStr.isNotBlank()) {
+                                    ips.add(InetAddress.getByName(ipStr))
+                                }
+                            }
+                        }
+                        if (ips.isNotEmpty()) {
+                            return ips
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.w("IslamwebAi", "DoH resolution failed for $hostname: ${e.message}")
+            }
+
+            // 3. Fallback to direct Anycast Google IPs
             val fallbackAddresses = googleAnycastIps.mapNotNull { ip ->
                 try {
                     val rawIp = InetAddress.getByName(ip).address
@@ -77,19 +110,19 @@ private class SmartGoogleDns : Dns {
 }
 
 object IslamwebAiService {
+    // Current valid and supported Gemini models in order of speed and stability
     private val MODELS_TO_TRY = listOf(
-        "gemini-2.5-flash",
-        "gemini-flash-latest",
-        "gemini-2.0-flash",
-        "gemini-1.5-flash"
+        "gemini-3.1-flash-lite-preview",
+        "gemini-3.7-flash",
+        "gemini-3.6-flash"
     )
 
     private val okHttpClient = OkHttpClient.Builder()
         .dns(SmartGoogleDns())
         .retryOnConnectionFailure(true)
-        .connectTimeout(20, TimeUnit.SECONDS)
-        .readTimeout(45, TimeUnit.SECONDS)
-        .writeTimeout(20, TimeUnit.SECONDS)
+        .connectTimeout(15, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(15, TimeUnit.SECONDS)
         .build()
 
     private const val SYSTEM_PROMPT = """

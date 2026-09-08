@@ -671,6 +671,74 @@ fun DailyDashboardScreen(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
+                // Prominent AI Fatwa Researcher Banner
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(14.dp))
+                        .clickable { showIslamwebDialog = true },
+                    color = Color(0xFF09291E),
+                    border = BorderStroke(1.5.dp, Color(0xFF4DD0E1))
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 14.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(42.dp)
+                                    .clip(CircleShape)
+                                    .background(Color(0xFF00695C)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = Color(0xFF80DEEA), modifier = Modifier.size(24.dp))
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        text = "🤖 باحث الفتاوى بالذكاء الاصطناعي (AI)",
+                                        color = Color(0xFFE0F7FA),
+                                        fontSize = 13.5.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Surface(
+                                        shape = RoundedCornerShape(4.dp),
+                                        color = Color(0xFF004D40)
+                                    ) {
+                                        Text(
+                                            text = "إسلام ويب حصرياً ✨",
+                                            color = Color(0xFF80CBC4),
+                                            fontSize = 9.5.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = "اسأل أي مسألة فقهية لتجيبك الفتوى الموثقة بالأدلة وأرقام الفتاوى فوراً",
+                                    color = Color(0xFFB2DFDB),
+                                    fontSize = 11.sp,
+                                    lineHeight = 15.sp
+                                )
+                            }
+                        }
+
+                        Icon(Icons.Default.ArrowForwardIos, contentDescription = null, tint = Color(0xFF80DEEA), modifier = Modifier.size(15.dp))
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
                 // Grid of major Islamic features
                 Row(
                     modifier = Modifier.fillMaxWidth(),
