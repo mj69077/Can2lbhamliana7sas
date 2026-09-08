@@ -78,6 +78,7 @@ fun DailyDashboardScreen(
     var showBadgesDialog by remember { mutableStateOf(false) }
     var showWeeklyCardDialog by remember { mutableStateOf(false) }
     var showPrivacyBackupDialog by remember { mutableStateOf(false) }
+    var showIslamwebDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
     val completedCount = tasks.count { it.isCompleted }
@@ -281,6 +282,13 @@ fun DailyDashboardScreen(
         PrivacyBackupDialog(
             viewModel = viewModel,
             onDismiss = { showPrivacyBackupDialog = false }
+        )
+    }
+
+    if (showIslamwebDialog) {
+        IslamwebFatwaDialog(
+            viewModel = viewModel,
+            onDismiss = { showIslamwebDialog = false }
         )
     }
 
@@ -1082,6 +1090,69 @@ fun DailyDashboardScreen(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
+                // AI Fatwa Researcher Card (Powered by IslamWeb & Gemini)
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(14.dp))
+                        .clickable { showIslamwebDialog = true },
+                    color = Color(0xFF0C2B20),
+                    border = BorderStroke(1.3.dp, Color(0xFF4DD0E1))
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 14.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(
+                                modifier = Modifier
+                                    .size(38.dp)
+                                    .clip(CircleShape)
+                                    .background(Color(0xFF00695C)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = Color(0xFF80DEEA), modifier = Modifier.size(22.dp))
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        text = "🤖 باحث الفتاوى بالذكاء الاصطناعي (AI)",
+                                        color = Color(0xFFE0F7FA),
+                                        fontSize = 12.5.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Surface(
+                                        shape = RoundedCornerShape(4.dp),
+                                        color = Color(0xFF004D40)
+                                    ) {
+                                        Text(
+                                            text = "إسلام ويب حصرياً",
+                                            color = Color(0xFF80CBC4),
+                                            fontSize = 9.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            modifier = Modifier.padding(horizontal = 5.dp, vertical = 1.dp)
+                                        )
+                                    }
+                                }
+                                Text(
+                                    text = "بحث فقهي ذكي موثق بالأدلة والمذاهب وأرقام الفتاوى",
+                                    color = Color(0xFFB2DFDB),
+                                    fontSize = 10.5.sp
+                                )
+                            }
+                        }
+
+                        Icon(Icons.Default.ArrowForwardIos, contentDescription = null, tint = Color(0xFF4DD0E1), modifier = Modifier.size(14.dp))
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
                 // Local Privacy & Backup Card (No external servers)
                 Surface(
                     modifier = Modifier
@@ -1517,6 +1588,23 @@ fun DailyDashboardScreen(
                                 color = IslamicMintLight,
                                 textAlign = TextAlign.Right
                             )
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            Button(
+                                onClick = { showIslamwebDialog = true },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(38.dp),
+                                shape = RoundedCornerShape(10.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B5542)),
+                                border = BorderStroke(1.dp, IslamicGoldLight),
+                                contentPadding = PaddingValues(horizontal = 10.dp)
+                            ) {
+                                Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = IslamicGoldPrimary, modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text("اسأل باحث الفتاوى بالذكاء الاصطناعي (إسلام ويب)", color = IslamicGoldLight, fontSize = 11.5.sp, fontWeight = FontWeight.Bold)
+                            }
                         }
                     }
                 }

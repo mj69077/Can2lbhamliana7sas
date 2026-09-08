@@ -26,13 +26,12 @@ data class IslamwebAiResponse(
 )
 
 object IslamwebAiService {
-    private const val MODEL_NAME = "gemini-3.5-flash"
-    private const val BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models/$MODEL_NAME:generateContent"
+    private val MODELS_TO_TRY = listOf("gemini-3.5-flash", "gemini-3.6-flash", "gemini-flash-latest")
 
     private val okHttpClient = OkHttpClient.Builder()
-        .connectTimeout(60, TimeUnit.SECONDS)
+        .connectTimeout(30, TimeUnit.SECONDS)
         .readTimeout(60, TimeUnit.SECONDS)
-        .writeTimeout(60, TimeUnit.SECONDS)
+        .writeTimeout(30, TimeUnit.SECONDS)
         .build()
 
     private const val SYSTEM_PROMPT = """
@@ -52,85 +51,86 @@ object IslamwebAiService {
 
     suspend fun searchIslamwebWithAi(userQuery: String): IslamwebAiResponse = withContext(Dispatchers.IO) {
         val apiKey = try {
-            BuildConfig.GEMINI_API_KEY
+            val key = BuildConfig.GEMINI_API_KEY
+            if (key.isNotBlank() && key != "your_api_key_here") key
+            else (System.getenv("GEMINI_API_KEY") ?: "")
         } catch (e: Exception) {
-            ""
+            System.getenv("GEMINI_API_KEY") ?: ""
         }
 
         if (apiKey.isBlank() || apiKey == "your_api_key_here") {
-            // Provide an intelligent local fallback grounded in IslamWeb's known rulings
             return@withContext provideOfflineIslamwebFallback(userQuery)
         }
 
-        try {
-            val requestJson = JSONObject().apply {
-                // System Instruction
-                put("systemInstruction", JSONObject().apply {
-                    put("parts", JSONArray().apply {
-                        put(JSONObject().apply {
-                            put("text", SYSTEM_PROMPT)
-                        })
-                    })
-                })
+        var lastErrorMessage: String? = null
 
-                // Contents
-                put("contents", JSONArray().apply {
-                    put(JSONObject().apply {
-                        put("role", "user")
+        for (modelName in MODELS_TO_TRY) {
+            try {
+                val requestJson = JSONObject().apply {
+                    put("systemInstruction", JSONObject().apply {
                         put("parts", JSONArray().apply {
                             put(JSONObject().apply {
-                                put("text", "ابحث في فتاوى وأرشيف إسلام ويب (islamweb.net) وأجب عن المسألة التالية بالتفصيل والأدلة الشرعية ورقم الفتوى إن وُجد: $userQuery")
+                                put("text", SYSTEM_PROMPT)
                             })
                         })
                     })
-                })
 
-                // Generation Config
-                put("generationConfig", JSONObject().apply {
-                    put("temperature", 0.3)
-                    put("topP", 0.95)
-                    put("topK", 40)
-                })
+                    put("contents", JSONArray().apply {
+                        put(JSONObject().apply {
+                            put("role", "user")
+                            put("parts", JSONArray().apply {
+                                put(JSONObject().apply {
+                                    put("text", "ابحث في فتاوى وأرشيف إسلام ويب (islamweb.net) وأجب عن المسألة التالية بالتفصيل والأدلة الشرعية ورقم الفتوى إن وُجد: $userQuery")
+                                })
+                            })
+                        })
+                    })
+
+                    put("generationConfig", JSONObject().apply {
+                        put("temperature", 0.3)
+                        put("topP", 0.95)
+                        put("topK", 40)
+                    })
+                }
+
+                val body = requestJson.toString().toRequestBody("application/json; charset=utf-8".toMediaType())
+                val url = "https://generativelanguage.googleapis.com/v1beta/models/$modelName:generateContent?key=$apiKey"
+                val request = Request.Builder()
+                    .url(url)
+                    .post(body)
+                    .build()
+
+                val response = okHttpClient.newCall(request).execute()
+                if (response.isSuccessful) {
+                    val responseStr = response.body?.string() ?: ""
+                    val jsonResponse = JSONObject(responseStr)
+                    val candidates = jsonResponse.optJSONArray("candidates")
+                    val firstCandidate = candidates?.optJSONObject(0)
+                    val content = firstCandidate?.optJSONObject("content")
+                    val parts = content?.optJSONArray("parts")
+                    val text = parts?.optJSONObject(0)?.optString("text")
+
+                    if (!text.isNullOrBlank()) {
+                        val extractedFatwaNum = extractFatwaNumber(text)
+                        val related = extractRelatedTopics(text)
+                        return@withContext IslamwebAiResponse(
+                            query = userQuery,
+                            answer = text,
+                            fatwaNumberHint = extractedFatwaNum,
+                            relatedTopics = related,
+                            sourceUrl = if (extractedFatwaNum != null) "https://www.islamweb.net/ar/fatwa/$extractedFatwaNum" else "https://www.islamweb.net/ar/fatawa/",
+                            isFromAi = true
+                        )
+                    }
+                } else {
+                    lastErrorMessage = "HTTP ${response.code}"
+                }
+            } catch (e: Exception) {
+                lastErrorMessage = e.localizedMessage ?: "Unknown network error"
             }
-
-            val body = requestJson.toString().toRequestBody("application/json; charset=utf-8".toMediaType())
-            val request = Request.Builder()
-                .url("$BASE_URL?key=$apiKey")
-                .post(body)
-                .build()
-
-            val response = okHttpClient.newCall(request).execute()
-            if (!response.isSuccessful) {
-                val errorBody = response.body?.string() ?: "HTTP ${response.code}"
-                return@withContext provideOfflineIslamwebFallback(userQuery, "تعذر الاتصال المباشر بالسيرفر ($errorBody)، وتم استرجاع الفتوى من قاعدة إسلام ويب المدمجة.")
-            }
-
-            val responseStr = response.body?.string() ?: ""
-            val jsonResponse = JSONObject(responseStr)
-            val candidates = jsonResponse.optJSONArray("candidates")
-            val firstCandidate = candidates?.optJSONObject(0)
-            val content = firstCandidate?.optJSONObject("content")
-            val parts = content?.optJSONArray("parts")
-            val text = parts?.optJSONObject(0)?.optString("text")
-
-            if (!text.isNullOrBlank()) {
-                val extractedFatwaNum = extractFatwaNumber(text)
-                val related = extractRelatedTopics(text)
-                return@withContext IslamwebAiResponse(
-                    query = userQuery,
-                    answer = text,
-                    fatwaNumberHint = extractedFatwaNum,
-                    relatedTopics = related,
-                    sourceUrl = if (extractedFatwaNum != null) "https://www.islamweb.net/ar/fatwa/$extractedFatwaNum" else "https://www.islamweb.net/ar/fatawa/",
-                    isFromAi = true
-                )
-            } else {
-                return@withContext provideOfflineIslamwebFallback(userQuery)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return@withContext provideOfflineIslamwebFallback(userQuery, "حدث تنبيه: ${e.localizedMessage}")
         }
+
+        return@withContext provideOfflineIslamwebFallback(userQuery, lastErrorMessage)
     }
 
     private fun extractFatwaNumber(text: String): String? {
