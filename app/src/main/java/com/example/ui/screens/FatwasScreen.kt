@@ -191,20 +191,20 @@ fun FatwasScreen(
                     ) {
                         Button(
                             onClick = { showIslamwebDialog = true },
-                            modifier = Modifier.weight(1.2f).height(38.dp),
+                            modifier = Modifier.weight(1.3f).height(38.dp),
                             shape = RoundedCornerShape(10.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B5542)),
-                            border = BorderStroke(1.dp, IslamicGoldLight),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF004D40)),
+                            border = BorderStroke(1.2.dp, Color(0xFF80DEEA)),
                             contentPadding = PaddingValues(horizontal = 6.dp)
                         ) {
-                            Icon(Icons.Default.Language, contentDescription = null, tint = IslamicGoldPrimary, modifier = Modifier.size(16.dp))
+                            Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = Color(0xFF80DEEA), modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("إسلام ويب 🌐", color = IslamicGoldLight, fontSize = 11.5.sp, fontWeight = FontWeight.Bold)
+                            Text("باحث AI إسلام ويب", color = Color(0xFFE0F7FA), fontSize = 11.sp, fontWeight = FontWeight.Bold)
                         }
 
                         Button(
                             onClick = { showHadithLibraryDialog = true },
-                            modifier = Modifier.weight(1f).height(38.dp),
+                            modifier = Modifier.weight(0.9f).height(38.dp),
                             shape = RoundedCornerShape(10.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF134533)),
                             border = BorderStroke(1.dp, IslamicGoldPrimary),

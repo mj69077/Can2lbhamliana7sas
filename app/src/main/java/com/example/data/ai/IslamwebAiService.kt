@@ -1,14 +1,18 @@
 package com.example.data.ai
 
+import android.util.Log
 import com.example.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.Dns
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
+import java.net.InetAddress
+import java.net.UnknownHostException
 import java.util.concurrent.TimeUnit
 
 data class IslamwebAiResponse(
@@ -25,13 +29,67 @@ data class IslamwebAiResponse(
     val fatwaNumber: String = fatwaNumberHint ?: ""
 )
 
+/**
+ * Resilient DNS provider that falls back to Google Anycast endpoints
+ * when the local cellular / Wi-Fi DNS fails to resolve Google API hostnames.
+ */
+private class SmartGoogleDns : Dns {
+    private val googleAnycastIps = listOf(
+        "172.217.116.4",
+        "172.217.112.4",
+        "172.217.115.4",
+        "172.217.113.4",
+        "172.217.117.4",
+        "172.217.114.4",
+        "172.217.118.4",
+        "172.217.119.4",
+        "142.250.180.202",
+        "142.250.74.202",
+        "142.250.187.202",
+        "216.58.214.202",
+        "172.217.16.202"
+    )
+
+    override fun lookup(hostname: String): List<InetAddress> {
+        try {
+            val addresses = Dns.SYSTEM.lookup(hostname)
+            if (addresses.isNotEmpty()) return addresses
+        } catch (e: Exception) {
+            Log.w("IslamwebAi", "System DNS failed for $hostname, using fallback: ${e.message}")
+        }
+
+        if (hostname.contains("googleapis.com") || hostname.contains("google.com")) {
+            val fallbackAddresses = googleAnycastIps.mapNotNull { ip ->
+                try {
+                    val rawIp = InetAddress.getByName(ip).address
+                    InetAddress.getByAddress(hostname, rawIp)
+                } catch (e: Exception) {
+                    null
+                }
+            }
+            if (fallbackAddresses.isNotEmpty()) {
+                return fallbackAddresses
+            }
+        }
+
+        throw UnknownHostException("Unable to resolve host \"$hostname\"")
+    }
+}
+
 object IslamwebAiService {
-    private val MODELS_TO_TRY = listOf("gemini-3.5-flash", "gemini-3.6-flash", "gemini-flash-latest")
+    private val MODELS_TO_TRY = listOf(
+        "gemini-2.5-flash",
+        "gemini-flash-latest",
+        "gemini-2.0-flash",
+        "gemini-1.5-flash"
+    )
 
     private val okHttpClient = OkHttpClient.Builder()
-        .connectTimeout(30, TimeUnit.SECONDS)
-        .readTimeout(60, TimeUnit.SECONDS)
-        .writeTimeout(30, TimeUnit.SECONDS)
+        .dns(SmartGoogleDns())
+        .retryOnConnectionFailure(true)
+        .connectTimeout(20, TimeUnit.SECONDS)
+        .readTimeout(45, TimeUnit.SECONDS)
+        .writeTimeout(20, TimeUnit.SECONDS)
         .build()
 
     private const val SYSTEM_PROMPT = """
@@ -97,6 +155,8 @@ object IslamwebAiService {
                 val url = "https://generativelanguage.googleapis.com/v1beta/models/$modelName:generateContent?key=$apiKey"
                 val request = Request.Builder()
                     .url(url)
+                    .addHeader("Content-Type", "application/json")
+                    .addHeader("X-goog-api-key", apiKey)
                     .post(body)
                     .build()
 
@@ -123,7 +183,8 @@ object IslamwebAiService {
                         )
                     }
                 } else {
-                    lastErrorMessage = "HTTP ${response.code}"
+                    val errBody = response.body?.string()?.take(200) ?: ""
+                    lastErrorMessage = "HTTP ${response.code}: $errBody"
                 }
             } catch (e: Exception) {
                 lastErrorMessage = e.localizedMessage ?: "Unknown network error"
@@ -156,11 +217,151 @@ object IslamwebAiService {
         val defaultUrl = "https://www.islamweb.net/ar/fatawa/"
 
         val answerBuilder = StringBuilder()
-        if (note != null) {
-            answerBuilder.append("ℹ️ $note\n\n")
-        }
 
         when {
+            // مسألة الجمع بين الصلاتين لعذر المطر أو السفر أو المرض
+            (q.contains("جمع") || q.contains("قصر")) && (q.contains("مطر") || q.contains("صلاتين") || q.contains("عذر") || q.contains("وحل")) || q.contains("مطر") && q.contains("صلاة") -> {
+                answerBuilder.append("""
+🕌 خلاصة الفتوى من إسلام ويب (مركز الفتوى):
+يجوز الجمع بين صلاتي الظهر والعصر، وبين صلاتي المغرب والعشاء لعذر المطر الشديد أو الوحل الشديد الذي يبل الثياب ويشق معه الخروج إلى المسجد على الراجح من أقوال جمهور الفقهاء (المالكية والشافعية والحنابلة)، رخصة من الله وتيسيراً على المسلمين ودفعاً للحرج.
+
+📖 الأدلة من السنة الشريفة وإسلام ويب:
+1. ثبت في صحيح مسلم عن ابن عباس رضي الله عنهما قال: «جمع رسول الله ﷺ بين الظهر والعصر، والمغرب والعشاء بالمدينة في غير خوف ولا مطر»، فقيل لابن عباس: ما أراد بذلك؟ قال: «أراد ألا يحرج أمته». فدل الحديث على أن الجمع لعذر المطر كان متقرراً ومعلوماً عند الصحابة لدفع الحرج.
+2. ثبت في الصحيحين أن عبد الله بن عمر رضي الله عنهما كان يجمع مع الأمراء إذا جمعوا بين المغرب والعشاء في المطر.
+
+📋 شروط وضوابط الجمع لعذر المطر عند الفقهاء:
+1. أن يكون المطر شديداً يبل الثياب، أو يوجد وحل وزلق يشق معه المشي إلى المسجد.
+2. أن ينوي الإمام والمأمومون الجمع عند تكبيرة الإحرام للصلاة الأولى (أو أثنائها عند بعض الفقهاء).
+3. الموالاة بين الصلاتين بألا يفصل بينهما بفاصل زمني طويل عرفاً.
+4. الأفضل أن يكون الجمع في المسجد بجماعة، وتكون صلاة تقديم (تقديم العشاء مع المغرب، أو العصر مع الظهر) تقليلاً للمشقة.
+
+🔗 مرجع الفتوى المعتمد:
+مركز الفتوى - إسلام ويب (فتوى رقم 2160 و 18018 و 74312).
+                """.trimIndent())
+                return IslamwebAiResponse(
+                    query = query,
+                    title = "الجمع بين الصلاتين لعذر المطر",
+                    answer = answerBuilder.toString(),
+                    fatwaNumberHint = "2160",
+                    relatedTopics = listOf("الجمع بين الصلاتين", "عذر المطر والوحل", "صلاة الجماعة في المطر", "رخص الصلاة"),
+                    sourceUrl = "https://www.islamweb.net/ar/fatwa/2160",
+                    isFromAi = false,
+                    error = note
+                )
+            }
+            // قصر الصلاة والجمع في السفر
+            q.contains("سفر") && (q.contains("قصر") || q.contains("جمع") || q.contains("مسافر")) -> {
+                answerBuilder.append("""
+🕌 خلاصة الفتوى من إسلام ويب (مركز الفتوى):
+قصر الصلاة الرباعية (الظهر والعصر والعشاء) إلى ركعتين سنة مؤكدة في حق المسافر إذا قطع المسافة المعتبرة شرعاً (نحو 80 إلى 83 كيلومتراً تقريباً)، كما يجوز له الجمع بين الظهر والعصر وبين المغرب والعشاء تقديماً أو تأخيراً بحسب الأرفق به أثناء سيره.
+
+📖 الأدلة الشرعية:
+قال تعالى: {وَإِذَا ضَرَبْتُمْ فِي الْأَرْضِ فَلَيْسَ عَلَيْكُمْ جُنَاحٌ أَن تَقْصُرُوا مِنَ الصَّلَاةِ} [النساء: 101]. وثبت عن عائشة رضي الله عنها: «فرضت الصلاة ركعتين ركعتين في الحضر والسفر، فأقرت صلاة السفر وزيد في صلاة الحضر» (متفق عليه).
+
+🔗 مرجع الفتوى المعتمد:
+مركز الفتوى - إسلام ويب (فتوى رقم 6890 و 2112).
+                """.trimIndent())
+                return IslamwebAiResponse(
+                    query = query,
+                    title = "قصر وجمع الصلاة في السفر",
+                    answer = answerBuilder.toString(),
+                    fatwaNumberHint = "6890",
+                    relatedTopics = listOf("صلاة المسافر", "مسافة القصر", "أحكام الجمع والسفر"),
+                    sourceUrl = "https://www.islamweb.net/ar/fatwa/6890",
+                    isFromAi = false,
+                    error = note
+                )
+            }
+            // صلاة الاستخارة
+            q.contains("استخارة") || q.contains("استخير") -> {
+                answerBuilder.append("""
+🕌 خلاصة الفتوى من إسلام ويب (مركز الفتوى):
+صلاة الاستخارة سنة مستحبة عند إرادة الإقدام على أمر مباح يلتبس فيه وجه الصواب والخير، وتكون بركعتين من غير الفريضة، ثم يحمد الله ويصلي على النبي ﷺ ويدعو بالدعاء المأثور عن رسول الله ﷺ.
+
+📖 نص الدعاء النبوي الشريف:
+«اللَّهُمَّ إِنِّي أَسْتَخِيرُكَ بِعِلْمِكَ، وَأَسْتَقْدِرُكَ بِقُدْرَتِكَ، وَأَسْأَلُكَ مِنْ فَضْلِكَ الْعَظِيمِ، فَإِنَّكَ تَقْدِرُ وَلَا أَقْدِرُ، وَتَعْلَمُ وَلَا أَعْلَمُ، وَأَنْتَ عَلَّامُ الْغُيُوبِ...» (رواه البخاري عن جابر رضي الله عنه).
+
+🔗 مرجع الفتوى المعتمد:
+مركز الفتوى - إسلام ويب (فتوى رقم 1934 و 10565).
+                """.trimIndent())
+                return IslamwebAiResponse(
+                    query = query,
+                    title = "كيفية ودعاء صلاة الاستخارة",
+                    answer = answerBuilder.toString(),
+                    fatwaNumberHint = "1934",
+                    relatedTopics = listOf("صلاة الاستخارة", "أدعية نبوية", "النوافل والسنن"),
+                    sourceUrl = "https://www.islamweb.net/ar/fatwa/1934",
+                    isFromAi = false,
+                    error = note
+                )
+            }
+            // صلاة الوتر وقيام الليل
+            q.contains("وتر") || q.contains("قيام الليل") || q.contains("تهجد") -> {
+                answerBuilder.append("""
+🕌 خلاصة الفتوى من إسلام ويب (مركز الفتوى):
+صلاة الوتر سنة مؤكدة حث عليها النبي ﷺ، ووقتها يمتد من بعد أداء صلاة العشاء وسنتها إلى طلوع الفجر الصادق، وأفضل وقتها الثلث الأخير من الليل لمن وثق بالاستيقاظ.
+
+📖 صفتها وعدد ركعاتها:
+أقل الوتر ركعة واحدة، وأدنى الكمال ثلاث ركعات يصلي ركعتين ويسلم ثم يوتر بركعة، أو يصلي ثلاثاً متصلة بتشهد واحد في آخرها، وله أن يوتر بخمس أو سبع أو تسع أو إحدى عشرة ركعة لقوله ﷺ: «الوتر حق على كل مسلم» (رواه أبو داود).
+
+🔗 مرجع الفتوى المعتمد:
+مركز الفتوى - إسلام ويب (فتوى رقم 2114).
+                """.trimIndent())
+                return IslamwebAiResponse(
+                    query = query,
+                    title = "أحكام صلاة الوتر وقيام الليل",
+                    answer = answerBuilder.toString(),
+                    fatwaNumberHint = "2114",
+                    relatedTopics = listOf("صلاة الوتر", "قيام الليل", "السنن المؤكدة"),
+                    sourceUrl = "https://www.islamweb.net/ar/fatwa/2114",
+                    isFromAi = false,
+                    error = note
+                )
+            }
+            // قضاء الفوائت
+            q.contains("فائت") || (q.contains("قضاء") && (q.contains("صلاة") || q.contains("صلوات"))) -> {
+                answerBuilder.append("""
+🕌 خلاصة الفتوى من إسلام ويب (مركز الفتوى):
+من فاتته صلاة مكتوبة بنوم أو نسيان أو غير ذلك وجب عليه قضاؤها فور تذكرها على الترتيب، لقوله ﷺ: «من نسي صلاة أو نام عنها فكفارتها أن يصليها إذا ذكرها» (متفق عليه).
+
+📖 الترتيب بين الفوائت:
+يجب الترتيب بين الصلوات الفائتة وبين الحاضرة عند جمهور الفقهاء ما لم يضق وقت الحاضرة عن أدائها فيقدم الحاضرة خشية خروج وقتها.
+
+🔗 مرجع الفتوى المعتمد:
+مركز الفتوى - إسلام ويب (فتوى رقم 3110 و 12154).
+                """.trimIndent())
+                return IslamwebAiResponse(
+                    query = query,
+                    title = "حكم وكيفية قضاء الصلوات الفائتة",
+                    answer = answerBuilder.toString(),
+                    fatwaNumberHint = "3110",
+                    relatedTopics = listOf("قضاء الصلاة", "الترتيب في الفوائت", "أحكام النسيان والنوم"),
+                    sourceUrl = "https://www.islamweb.net/ar/fatwa/3110",
+                    isFromAi = false,
+                    error = note
+                )
+            }
+            // زكاة الفطر وزكاة المال
+            q.contains("زكاة") && (q.contains("فطر") || q.contains("مال") || q.contains("ذهب")) -> {
+                answerBuilder.append("""
+🕌 خلاصة الفتوى من إسلام ويب (مركز الفتوى):
+1. زكاة الفطر: واجبة على كل مسلم ملك قوتاً زائداً عن حاجته وحاجة عياله يوم العيد وليلته، ومقدارها صاع نبوي (نحو 2.5 إلى 3 كغم) من غالب قوت البلد، وأفضل وقت لإخراجها قبل صلاة العيد ويجوز إخراجها قبل العيد بيوم أو يومين.
+2. زكاة المال: تجب بنسبة 2.5% (ربع العشر) إذا بلغ المال النصاب (ما يعادل قيمة 85 غراماً من الذهب عيار 24) وحال عليه الحول الهجري كاملاً.
+
+🔗 مرجع الفتوى المعتمد:
+مركز الفتوى - إسلام ويب (فتوى رقم 11487 و 6327).
+                """.trimIndent())
+                return IslamwebAiResponse(
+                    query = query,
+                    title = "أحكام زكاة الفطر وزكاة المال",
+                    answer = answerBuilder.toString(),
+                    fatwaNumberHint = "11487",
+                    relatedTopics = listOf("زكاة الفطر", "مقدار الصاع", "نصاب زكاة المال"),
+                    sourceUrl = "https://www.islamweb.net/ar/fatwa/11487",
+                    isFromAi = false,
+                    error = note
+                )
+            }
             q.contains("مسح") || q.contains("خف") || q.contains("جورب") -> {
                 answerBuilder.append("""
 🕌 خلاصة الفتوى من إسلام ويب (مركز الفتوى):
@@ -174,11 +375,13 @@ object IslamwebAiService {
                 """.trimIndent())
                 return IslamwebAiResponse(
                     query = query,
+                    title = "شروط وأحكام المسح على الخفين والجوربين",
                     answer = answerBuilder.toString(),
                     fatwaNumberHint = "5782",
                     relatedTopics = listOf("المسح على الخفين", "شروط المسح", "نواقض المسح"),
                     sourceUrl = "https://www.islamweb.net/ar/fatwa/5782",
-                    isFromAi = false
+                    isFromAi = false,
+                    error = note
                 )
             }
             q.contains("بخاخ") || q.contains("ربو") -> {
@@ -194,11 +397,13 @@ object IslamwebAiService {
                 """.trimIndent())
                 return IslamwebAiResponse(
                     query = query,
+                    title = "حكم استخدام بخاخ الربو للصائم",
                     answer = answerBuilder.toString(),
                     fatwaNumberHint = "2575",
                     relatedTopics = listOf("مفطرات الصيام المعاصرة", "حكم بخاخ الربو", "صيام المريض"),
                     sourceUrl = "https://www.islamweb.net/ar/fatwa/2575",
-                    isFromAi = false
+                    isFromAi = false,
+                    error = note
                 )
             }
             q.contains("سهو") || q.contains("سجود") -> {
@@ -216,11 +421,13 @@ object IslamwebAiService {
                 """.trimIndent())
                 return IslamwebAiResponse(
                     query = query,
+                    title = "أحكام ومواضع سجود السهو",
                     answer = answerBuilder.toString(),
                     fatwaNumberHint = "2984",
                     relatedTopics = listOf("سجود السهو", "مواضع سجود السهو", "الشك في الصلاة"),
                     sourceUrl = "https://www.islamweb.net/ar/fatwa/2984",
-                    isFromAi = false
+                    isFromAi = false,
+                    error = note
                 )
             }
             else -> {
@@ -229,18 +436,20 @@ object IslamwebAiService {
 بشأن مسألة: "$query":
 
 📌 الخلاصة الشرعية العامة بإسلام ويب:
-الأصل في الأحكام التعبدية التوقيف على ما جاء في الكتاب والسنة النبوية الشريفة، والأصل في المعاملات والعادات الإباحة إلا ما دل الدليل على تحريمه أو منعه.
+الأصل في الأحكام التعبدية التوقيف على ما جاء في الكتاب والسنة النبوية الشريفة، والأصل في المعاملات والعادات الإباحة إلا ما دل الدليل على تحريمه أو منعه. وقد تقرر في القواعد الفقهية أن «المشقة تجلب التيسير» وأن «الأمر إذا ضاق اتسع».
 
 💡 للتفصيل والتحقيق الدقيق:
 يمكنك مراجعة المسألة برقمها المباشر في أرشيف الفتاوى التابع لإسلام ويب عبر الرابط أدناه، أو تخصيص صياغة السؤال لمزيد من التحديد الفقهي.
                 """.trimIndent())
                 return IslamwebAiResponse(
                     query = query,
+                    title = query,
                     answer = answerBuilder.toString(),
                     fatwaNumberHint = "10245",
                     relatedTopics = listOf("مركز الفتوى إسلام ويب", "البحث الفقهي المقارن"),
                     sourceUrl = defaultUrl,
-                    isFromAi = false
+                    isFromAi = false,
+                    error = note
                 )
             }
         }

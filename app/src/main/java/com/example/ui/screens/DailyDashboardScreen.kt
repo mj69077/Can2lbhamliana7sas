@@ -15,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -308,7 +309,8 @@ fun DailyDashboardScreen(
                 onOpenZakatCalculator = { showZakatDialog = true },
                 onOpenCalendar = { showHijriCalendarDialog = true },
                 onOpenStatistics = { showStatisticsDialog = true },
-                onOpenAdhanSettings = { showAdhanSettingsDialog = true }
+                onOpenAdhanSettings = { showAdhanSettingsDialog = true },
+                onOpenAiChat = { showIslamwebDialog = true }
             )
         }
 
@@ -342,6 +344,109 @@ fun DailyDashboardScreen(
                     onNavigateToPrayer = { viewModel.setTab(AppTab.PRAYER) },
                     onOpenAdhanSettings = { showAdhanSettingsDialog = true }
                 )
+            }
+        }
+
+        // 2.5 Prominent AI Islamic Assistant Banner (One-Tap Entry)
+        item {
+            Spacer(modifier = Modifier.height(12.dp))
+            Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(16.dp))
+                        .clickable { showIslamwebDialog = true },
+                    color = Color(0xFF072B20),
+                    border = BorderStroke(1.5.dp, Color(0xFF80DEEA))
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 14.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(42.dp)
+                                    .clip(CircleShape)
+                                    .background(
+                                        Brush.linearGradient(
+                                            listOf(Color(0xFF00695C), Color(0xFF004D40))
+                                        )
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    Icons.Default.AutoAwesome,
+                                    contentDescription = null,
+                                    tint = Color(0xFF80DEEA),
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        text = "المساعد والباحث الإسلامي (AI)",
+                                        color = Color(0xFFE0F7FA),
+                                        fontSize = 13.5.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Surface(
+                                        shape = RoundedCornerShape(6.dp),
+                                        color = Color(0xFF004D40)
+                                    ) {
+                                        Text(
+                                            text = "إسلام ويب",
+                                            color = Color(0xFF80DEEA),
+                                            fontSize = 9.5.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp)
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = "اطرح أي مسألة فقهية أو سؤال شرعي واحصل على إجابة موثقة",
+                                    color = Color(0xFFB2DFDB),
+                                    fontSize = 11.sp
+                                )
+                            }
+                        }
+
+                        Surface(
+                            shape = RoundedCornerShape(10.dp),
+                            color = Color(0xFF004D40),
+                            border = BorderStroke(1.dp, Color(0xFF4DD0E1)),
+                            modifier = Modifier.padding(start = 8.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    "اسأل الآن",
+                                    color = Color(0xFFE0F7FA),
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Spacer(modifier = Modifier.width(3.dp))
+                                Icon(
+                                    Icons.Default.ArrowForwardIos,
+                                    contentDescription = null,
+                                    tint = Color(0xFF80DEEA),
+                                    modifier = Modifier.size(11.dp)
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -404,8 +509,14 @@ fun DailyDashboardScreen(
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
+                    QuickActionCard(
+                        title = "الذكاء AI",
+                        icon = Icons.Default.AutoAwesome,
+                        modifier = Modifier.weight(1f),
+                        onClick = { showIslamwebDialog = true }
+                    )
                     QuickActionCard(
                         title = "الإذاعة",
                         icon = Icons.Default.Radio,

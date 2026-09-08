@@ -1076,15 +1076,30 @@ fun IslamwebAiAssistantView(
                         ) {
                             Surface(
                                 shape = RoundedCornerShape(6.dp),
-                                color = Color(0xFF114232)
+                                color = if (resp.isFromAi) Color(0xFF004D40) else Color(0xFF114232)
                             ) {
-                                Text(
-                                    text = if (resp.fatwaNumber.isNotBlank()) "فتوى رقم #${resp.fatwaNumber}" else "فتوى معتمدة - إسلام ويب",
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = IslamicGoldPrimary,
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
-                                )
+                                Row(
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = if (resp.isFromAi) Icons.Default.AutoAwesome else Icons.Default.Verified,
+                                        contentDescription = null,
+                                        tint = if (resp.isFromAi) Color(0xFF80DEEA) else IslamicGoldPrimary,
+                                        modifier = Modifier.size(14.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = if (resp.isFromAi) {
+                                            if (resp.fatwaNumber.isNotBlank()) "ذكاء اصطناعي • فتوى #${resp.fatwaNumber}" else "إجابة الذكاء الاصطناعي (إسلام ويب)"
+                                        } else {
+                                            if (resp.fatwaNumber.isNotBlank()) "أرشيف إسلام ويب • فتوى #${resp.fatwaNumber}" else "فتوى معتمدة - إسلام ويب"
+                                        },
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (resp.isFromAi) Color(0xFFE0F7FA) else IslamicGoldPrimary
+                                    )
+                                }
                             }
 
                             Row {
@@ -1111,6 +1126,35 @@ fun IslamwebAiAssistantView(
                         }
 
                         Spacer(modifier = Modifier.height(10.dp))
+
+                        if (!resp.isFromAi && !resp.error.isNullOrBlank()) {
+                            Surface(
+                                shape = RoundedCornerShape(8.dp),
+                                color = Color(0xFF261D12),
+                                border = BorderStroke(1.dp, Color(0xFF8D6E3F)),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(10.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        Icons.Default.Info,
+                                        contentDescription = null,
+                                        tint = Color(0xFFFFB74D),
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = "تم عرض الفتوى المعتمدة من أرشيف مركز الفتوى بإسلام ويب (نظراً لعدم استقرار اتصال الإنترنت بالذكاء الاصطناعي اللحظي).",
+                                        fontSize = 11.sp,
+                                        color = Color(0xFFFFE0B2),
+                                        lineHeight = 16.sp
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
 
                         Text(
                             text = resp.title,

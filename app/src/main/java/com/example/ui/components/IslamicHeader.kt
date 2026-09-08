@@ -32,6 +32,7 @@ fun IslamicHeader(
     onOpenCalendar: () -> Unit = {},
     onOpenStatistics: () -> Unit = {},
     onOpenAdhanSettings: () -> Unit = {},
+    onOpenAiChat: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val currentHour = remember { Calendar.getInstance().get(Calendar.HOUR_OF_DAY) }
@@ -98,8 +99,36 @@ fun IslamicHeader(
                     }
                 }
 
-                // Settings & App Title
+                // AI & Settings & App Title
                 Row(verticalAlignment = Alignment.CenterVertically) {
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = Color(0xFF004D40),
+                        border = BorderStroke(1.2.dp, Color(0xFF80DEEA)),
+                        modifier = Modifier.clickable { onOpenAiChat() }
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(horizontal = 9.dp, vertical = 6.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.AutoAwesome,
+                                contentDescription = "ذكاء اصطناعي",
+                                tint = Color(0xFF80DEEA),
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "AI",
+                                color = Color(0xFFE0F7FA),
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.width(6.dp))
+
                     IconButton(
                         onClick = onOpenAdhanSettings,
                         modifier = Modifier
